@@ -79,7 +79,7 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* <div className="hidden md:flex items-center space-x-8">
             <button
               onClick={() => scrollToSection("features")}
               className="text-gray-500 hover:text-blue-400 transition-colors font-medium">
@@ -106,7 +106,7 @@ const Header = () => {
                 Start Free Trial
               </Button>
             </a>
-          </div>
+          </div> */}
 
           {/* Mobile Menu Button */}
           <button

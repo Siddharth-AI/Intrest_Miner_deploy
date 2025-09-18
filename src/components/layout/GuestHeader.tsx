@@ -63,7 +63,7 @@ export default function GuestHeader() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link
+            {/* <Link
               to="/login"
               className="text-gray-500 hover:text-blue-400 transition-colors">
               <Button
@@ -72,6 +72,28 @@ export default function GuestHeader() {
                   background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
                 }}>
                 Start Free Trial
+              </Button>
+            </Link> */}
+            <Link
+              to="/login"
+              className="text-gray-500 hover:text-blue-400 transition-colors">
+              <Button
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 hover:border-white/50 backdrop-blur-sm hover:shadow-lg transition-all transform "
+                style={{
+                  background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
+                }}>
+                Login
+              </Button>
+            </Link>
+            <Link
+              to="/register"
+              className="text-gray-500 hover:text-blue-400 transition-colors">
+              <Button
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 hover:border-white/50 backdrop-blur-sm hover:shadow-lg transition-all transform "
+                style={{
+                  background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
+                }}>
+                Sign Up
               </Button>
             </Link>
           </div>
