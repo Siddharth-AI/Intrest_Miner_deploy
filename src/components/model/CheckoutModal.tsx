@@ -170,7 +170,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         if (!scriptLoaded || !window.Razorpay) return;
 
         const razorpay = new window.Razorpay({
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          key: import.meta.env.VITE_RAZORPAY_REAL_KEY_ID,
           amount: orderData.order.amount,
           currency: orderData.order.currency,
           name: "Interest Miner",
