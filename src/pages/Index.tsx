@@ -107,19 +107,6 @@ const InterestGenerator = () => {
     }
   }, [hasSeenInterestMinerTutorial, onboardingLoading]);
 
-  // useEffect(() => {
-  //   const hasSeenTutorial = localStorage.getItem(
-  //     "hasSeenInterestMinerTutorial"
-  //   );
-
-  //   if (!hasSeenTutorial) {
-  //     setShowTutorialPopup(true);
-  //     localStorage.setItem("hasSeenInterestMinerTutorial", "true");
-  //   } else {
-  //     setShowTutorialButton(true);
-  //   }
-  // }, []);
-
   const handleFormSubmit = async (data: BusinessFormData) => {
     setBusinessData(data);
     setCurrentStep(2);
@@ -219,7 +206,7 @@ const InterestGenerator = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className="text-gray-600 dark:text-gray-300 text-lg mb-8 leading-relaxed">
-                Get top 15 guaranteed high-converting interests hand-picked by
+                Get top 50 guaranteed high-converting interests hand-picked by
                 AI from thousands of possibilities.
               </motion.p>
 
@@ -380,7 +367,7 @@ const InterestGenerator = () => {
                       Premium Interest Mining
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                      Skip the guesswork. Get top 15 guaranteed high-converting
+                      Skip the guesswork. Get top 50 guaranteed high-converting
                       interests tailored to your business.
                     </p>
                   </div>
