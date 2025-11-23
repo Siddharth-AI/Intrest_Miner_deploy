@@ -13,8 +13,8 @@ import {
   LogOut,
   X,
   TrendingUp,
+  Zap,
 } from "lucide-react";
-
 import { clearAllData } from "../../../store/features/facebookAdsSlice";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +25,7 @@ import { FaMoneyBillWave } from "react-icons/fa";
 import { logout } from "../../../store/features/loginSlice";
 import Portal from "../ui/Portal";
 import { fetchProfileData } from "../../../store/features/profileSlice";
+import { performLogout } from "@/utils/logout";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -121,22 +122,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
     }
   }, [showUserMenu, isCollapsed, isMobile]);
 
-  const handleLogout = () => {
-    // Clear authentication token
-    localStorage.clear();
-
-    // Clear Facebook data and token
-    dispatch(clearAllData());
-
-    // Reset other states if needed
-    dispatch(resetSearchState());
-
-    // Logout user
-    dispatch(logout());
-
-    // Navigate to home
-    router("/");
-    setShowUserMenu(false);
+  const handleLogout = async () => {
+    await performLogout(dispatch, router, {
+      closeModal: () => setShowUserMenu(false),
+    });
   };
 
   const navigationItems = [
@@ -171,6 +160,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
       path: "/advance-analytics",
       active: location.pathname === "/advance-analytics",
       badge: "Pro",
+    },
+    // In your menu items array, add:
+    {
+      name: "Interest Attribution",
+      icon: Zap,
+      path: "/interest-attribution",
+      active: location.pathname === "/interest-attribution",
+      badge: "New",
     },
   ];
 
