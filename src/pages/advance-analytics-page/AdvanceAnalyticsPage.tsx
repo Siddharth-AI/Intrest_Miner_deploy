@@ -764,35 +764,6 @@ const AdvanceAnalyticsPage: React.FC = () => {
     },
   ];
 
-  const getCategoryBadgeColor = (category: string) => {
-    // 🔥 NEW: Handle new verdict categories
-    if (
-      category?.includes("champion") ||
-      category?.includes("magnet") ||
-      category?.includes("superstar")
-    ) {
-      return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-    }
-    if (
-      category?.includes("solid") ||
-      category?.includes("steady") ||
-      category?.includes("performer")
-    ) {
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
-    }
-    if (
-      category?.includes("building") ||
-      category?.includes("developing") ||
-      category?.includes("emerging")
-    ) {
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
-    }
-    if (category?.includes("struggling") || category?.includes("weak")) {
-      return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-    }
-    return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
-  };
-
   const handleCampaignClick = (campaign: any) => {
     setSelectedCampaign(campaign);
     setShowCampaignDetails(true);
@@ -801,10 +772,6 @@ const AdvanceAnalyticsPage: React.FC = () => {
   const handleCloseCampaignDetails = () => {
     setShowCampaignDetails(false);
     setSelectedCampaign(null);
-  };
-
-  const getFilteredCampaigns = () => {
-    return filteredCampaigns;
   };
 
   // const handleExportData = async (options: ExportOptions) => {
@@ -2297,6 +2264,7 @@ const AdvanceAnalyticsPage: React.FC = () => {
                                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
                                   Conversions
                                 </th>
+
                                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
                                   Start Date
                                 </th>

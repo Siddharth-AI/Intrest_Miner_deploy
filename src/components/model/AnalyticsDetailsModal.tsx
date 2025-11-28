@@ -141,6 +141,20 @@ const AnalyticsDetailsModal: React.FC<AnalyticsDetailsModalProps> = ({
         bgColor: "bg-pink-50",
         textColor: "text-pink-600",
       },
+      // 🔥🔥 ADD THIS NEW LEADS CARD
+      {
+        title: "Total Leads",
+        value: (
+          campaign?.totals?.actions?.lead ||
+          campaign?.conversions?.lead ||
+          campaign?.totalLeads ||
+          0
+        ).toLocaleString(),
+        icon: UsersIcon,
+        color: "from-green-500 to-green-600",
+        bgColor: "bg-green-50",
+        textColor: "text-green-600",
+      },
     ];
   }, [campaign]);
 
