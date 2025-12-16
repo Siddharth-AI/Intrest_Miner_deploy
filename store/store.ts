@@ -55,7 +55,7 @@ const rootPersistConfig = {
   key: 'root',
   version: 1,
   storage,
-  whitelist: ['openAi', 'aiSearchHistory', 'profile'], // Keep existing persisted slices
+  whitelist: ['openAi', 'aiSearchHistory'], // Keep existing persisted slices
   blacklist: ['facebookAds'] // 🔥 Exclude facebookAds (handled separately)
 };
 
