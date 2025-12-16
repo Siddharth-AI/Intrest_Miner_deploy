@@ -1,42 +1,60 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks"; // Use typed hooks
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { fetchProfileData } from "../../../store/features/profileSlice";
 
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const token = localStorage.getItem("token");
   const location = useLocation();
-  const dispatch = useAppDispatch(); // Use typed dispatch
+  const dispatch = useAppDispatch();
+  const [initialLoad, setInitialLoad] = useState(true);
+  
   const {
     data: userProfile,
     loading,
     error,
-  } = useAppSelector((state) => state.profile); // Use typed selector
+  } = useAppSelector((state) => state.profile);
 
   useEffect(() => {
-    // If authenticated but profile data is not loaded, fetch it.
-    if (token && !userProfile && !loading && !error) {
+    if (!token) return;
+    
+    // Only fetch if no profile data exists and not already loading
+    if (!userProfile && !loading) {
       dispatch(fetchProfileData());
+    } else if (userProfile) {
+      // Profile exists, no need to show loading
+      setInitialLoad(false);
     }
-  }, [token, userProfile, loading, error, dispatch]);
+  }, [token, userProfile, loading, dispatch]);
+
+  useEffect(() => {
+    // Hide loading after profile is loaded or error occurs
+    if (userProfile || error) {
+      setInitialLoad(false);
+    }
+  }, [userProfile, error]);
 
   if (!token) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (loading && !userProfile) {
+  // Show loading only on initial load when no profile data exists
+  if (initialLoad && loading && !userProfile) {
     return (
-      <div className="flex justify-center items-center h-screen text-lg text-gray-700">
-        Loading user profile...
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-3 border-[#3b82f6] border-t-transparent"></div>
+          <p className="text-[#2d3748] font-medium">Loading profile...</p>
+        </div>
       </div>
     );
   }
 
-  // If there's an error fetching profile data, you might want to handle it
-  // e.g., redirect to login or show a generic error message.
+  // If error and no cached profile, redirect to login
   if (error && !userProfile) {
-    console.error("Error fetching user profile:", error);
-    // return <Navigate to="/login" replace />; // Or display an error to the user
+    console.error("Profile fetch error:", error);
+    localStorage.removeItem("token");
+    return <Navigate to="/login" replace />;
   }
 
   return children;

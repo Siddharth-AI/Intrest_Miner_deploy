@@ -24,7 +24,7 @@ import billingHistoryReducer from './features/billingHistorySlice';
 import razorpayReducer from './features/razorpaySlice';
 import facebookAdsReducer from './features/facebookAdsSlice';
 import onboardingReducer from './features/onboardingSlice';
-import interestAttributionReducer from "./features/interestAttributionSlice";
+import interestAnalysisReducer from './features/interestAnalysisSlice';
 
 
 // 🔥 NEW: Separate persist config for facebookAds with selective fields
@@ -55,7 +55,7 @@ const rootPersistConfig = {
   key: 'root',
   version: 1,
   storage,
-  whitelist: ['openAi', 'aiSearchHistory'], // Keep existing persisted slices
+  whitelist: ['openAi', 'aiSearchHistory', 'profile'], // Keep existing persisted slices
   blacklist: ['facebookAds'] // 🔥 Exclude facebookAds (handled separately)
 };
 
@@ -74,7 +74,7 @@ const rootReducer = combineReducers({
   razorpay: razorpayReducer,
   facebookAds: persistedFacebookAdsReducer, // 🔥 Use persisted version
   onboarding: onboardingReducer,
-  interestAttribution: interestAttributionReducer,
+  interestAnalysis: interestAnalysisReducer,
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

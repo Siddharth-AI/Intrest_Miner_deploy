@@ -10,7 +10,7 @@ import Dashboard from "@/pages/dashboard/Dashboard";
 import MetaCampaign from "@/pages/meta-campaign/MetaCampaign";
 import AnalyticsPage from "@/pages/analytics-page/AnalyticsPage";
 import AdvanceAnalyticsPage from "@/pages/advance-analytics-page/AdvanceAnalyticsPage";
-import InterestAttributionPage from "@/pages/interest-attribution-page/InterestAttributionPage";
+import { InterestAnalysisPage } from "@/pages/interest-analysis/InterestAnalysisPage";
 const AuthRoutes = () => {
   return (
     <>
@@ -24,10 +24,7 @@ const AuthRoutes = () => {
       <Route path="/billing-history" element={<BillingHistory />} />
       <Route path="/analytics" element={<AnalyticsPage />} />
       <Route path="/advance-analytics" element={<AdvanceAnalyticsPage />} />
-      <Route
-        path="/interest-attribution"
-        element={<InterestAttributionPage />}
-      />
+      <Route path="/interest-analysis" element={<InterestAnalysisPage />} />
     </>
   );
 };

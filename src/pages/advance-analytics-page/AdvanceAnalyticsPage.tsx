@@ -223,16 +223,10 @@ const AdvanceAnalyticsPage: React.FC = () => {
     setInsightsRequested(false);
   }, []); // Run only once on mount
 
-  // 🔥 SIMPLIFIED: Use existing Redux loadingTotals state
+  // 🔥 SIMPLIFIED: Use existing Redux loadingTotals state with subscription check
   useEffect(() => {
-    if (selectedAccount && !insightsRequested && !loadingTotals) {
+    if (selectedAccount && !insightsRequested && !loadingTotals && hasFacebookConnection && hasActiveSubscription) {
       console.log("🔄 AdvanceAnalytics: Loading insights for", selectedAccount);
-
-      // // Generate AI cache key
-      // const aiCacheKey = `${selectedAccount}_${dateFilter}_${
-      //   customDateRange.since || "none"
-      // }_${customDateRange.until || "none"}_AI_ON`;
-      // const hasAICache = insightsCache && insightsCache[aiCacheKey];
 
       console.log(
         "🔍 AI Cache check:",
@@ -295,6 +289,8 @@ const AdvanceAnalyticsPage: React.FC = () => {
     customDateRange,
     hasValidCache,
     toast,
+    hasFacebookConnection,
+    hasActiveSubscription,
   ]);
 
   // 🔥 Reset when leaving page
@@ -332,7 +328,7 @@ const AdvanceAnalyticsPage: React.FC = () => {
 
       // Debounce insights fetching
       accountChangeTimerRef.current = setTimeout(() => {
-        if (accountId && hasFacebookConnection) {
+        if (accountId && hasFacebookConnection && hasActiveSubscription) {
           dispatch(fetchCampaigns(accountId));
 
           // Only fetch insights if needed
@@ -348,7 +344,7 @@ const AdvanceAnalyticsPage: React.FC = () => {
         }
       }, 300); // 300ms debounce for account changes
     },
-    [dispatch, shouldLoadInsights, hasFacebookConnection]
+    [dispatch, shouldLoadInsights, hasFacebookConnection, hasActiveSubscription]
   );
 
   const formatCurrency = (amount: number | string) => {
@@ -574,6 +570,15 @@ const AdvanceAnalyticsPage: React.FC = () => {
       toast({
         title: "No Account Selected",
         description: "Please select an ad account first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!hasFacebookConnection || !hasActiveSubscription) {
+      toast({
+        title: "Access Denied",
+        description: "Facebook connection and active subscription required.",
         variant: "destructive",
       });
       return;

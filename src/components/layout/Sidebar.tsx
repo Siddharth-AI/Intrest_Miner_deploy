@@ -163,10 +163,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
     },
     // In your menu items array, add:
     {
-      name: "Interest Attribution",
+      name: "AI-Powered Analysis",
       icon: Zap,
-      path: "/interest-attribution",
-      active: location.pathname === "/interest-attribution",
+      path: "/interest-analysis",
+      active: location.pathname === "/interest-analysis",
       badge: "New",
     },
   ];

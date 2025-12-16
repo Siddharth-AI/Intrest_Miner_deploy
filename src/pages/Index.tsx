@@ -42,17 +42,17 @@ const InterestGenerator = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   // Get onboarding status from Redux store
-  const { hasSeenInterestMinerTutorial, loading: onboardingLoading } =
-    useAppSelector((state) => state.onboarding);
+  const hasSeenInterestMinerTutorial = useAppSelector(
+    (state) => state.onboarding.hasSeenInterestMinerTutorial
+  );
+  const onboardingLoading = useAppSelector((state) => state.onboarding.loading);
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
   const [showHelpTooltip, setShowHelpTooltip] = useState(true);
-  const {
-    data: userProfile,
-    loading,
-    error,
-  } = useAppSelector((state) => state.profile);
+  const userProfile = useAppSelector((state) => state.profile.data);
+  const loading = useAppSelector((state) => state.profile.loading);
+  const error = useAppSelector((state) => state.profile.error);
   const [currentStep, setCurrentStep] = useState(1);
   const [businessData, setBusinessData] = useState<BusinessFormData | null>(
     null
@@ -60,7 +60,7 @@ const InterestGenerator = () => {
 
   const hasActiveSubscription = userProfile?.subscription_status === "active";
 
-  const { data: openAiData } = useAppSelector((state) => state.openAi);
+  const openAiData = useAppSelector((state) => state.openAi.data);
 
   // Theme detection - ONLY ADDITION
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -92,7 +92,7 @@ const InterestGenerator = () => {
 
   const [showTutorialPopup, setShowTutorialPopup] = useState(false);
   const [showTutorialButton, setShowTutorialButton] = useState(false);
-  const { loading: isProcessing } = useAppSelector((state) => state.openAi);
+  const isProcessing = useAppSelector((state) => state.openAi.loading);
 
   console.log(businessData, "testing data check>>>>>>>>>>>>>>>");
 

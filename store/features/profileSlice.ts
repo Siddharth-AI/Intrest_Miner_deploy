@@ -43,6 +43,7 @@ interface ProfileState {
   updateLoading: boolean;
   updateError: string | null;
   updateSuccess: boolean;
+  lastFetched: number | null;
 }
 
 const initialState: ProfileState = {
@@ -52,12 +53,27 @@ const initialState: ProfileState = {
   updateLoading: false,
   updateError: null,
   updateSuccess: false,
+  lastFetched: null,
+};
+
+// Helper function to check if profile data is fresh (less than 5 minutes old)
+const isProfileDataFresh = (lastFetched: number | null): boolean => {
+  if (!lastFetched) return false;
+  const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+  return Date.now() - lastFetched < fiveMinutes;
 };
 
 // Async Thunk for fetching profile data
 export const fetchProfileData = createAsyncThunk(
   'profile/fetchProfileData',
-  async (_, { rejectWithValue }) => {
+  async (forceRefresh: boolean = false, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { data, lastFetched } = state.profile;
+    
+    // If we have fresh data and not forcing refresh, return existing data
+    if (!forceRefresh && data && isProfileDataFresh(lastFetched)) {
+      return data;
+    }
     try {
       const accessToken = localStorage.getItem('token'); // Get access token from localStorage
       if (!accessToken) {
@@ -137,6 +153,12 @@ const profileSlice = createSlice({
       state.updateSuccess = false;
       state.updateError = null;
     },
+    // Action to clear profile data (for logout)
+    clearProfile: (state) => {
+      state.data = null;
+      state.lastFetched = null;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -148,6 +170,7 @@ const profileSlice = createSlice({
       .addCase(fetchProfileData.fulfilled, (state, action: PayloadAction<UserProfileData>) => {
         state.loading = false;
         state.data = action.payload;
+        state.lastFetched = Date.now();
       })
       .addCase(fetchProfileData.rejected, (state, action) => {
         state.loading = false;
@@ -173,6 +196,6 @@ const profileSlice = createSlice({
   },
 });
 
-export const { resetUpdateStatus } = profileSlice.actions;
+export const { resetUpdateStatus, clearProfile } = profileSlice.actions;
 export default profileSlice.reducer;
 

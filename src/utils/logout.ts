@@ -2,6 +2,7 @@ import type { AppDispatch } from '../../store/store';
 import { clearAllData } from '../../store/features/facebookAdsSlice';
 import { logout } from '../../store/features/loginSlice';
 import { resetSearchState } from "../../store/features/facebookSlice";
+import { clearProfile } from '../../store/features/profileSlice';
 /**
  * 🔥 Centralized logout function
  * 
@@ -28,7 +29,10 @@ export const performLogout = async (
     // 3. Reset search state
     dispatch(resetSearchState());
 
-    // 4. Logout user
+    // 4. Clear profile data
+    dispatch(clearProfile());
+
+    // 5. Logout user
     dispatch(logout());
 
     // 5. ❌ DON'T purge ALL persist - only clear auth tokens
