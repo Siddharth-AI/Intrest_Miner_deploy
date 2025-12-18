@@ -3,12 +3,61 @@ import { Button } from "@/components/ui/button";
 import { Menu, Pickaxe, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import {
+  motion,
+  useAnimation,
+  useSpring,
+  useTransform,
+  MotionValue,
+  useInView,
+  useScroll,
+} from "framer-motion";
 const Register = () => {
   return (
     <>
       <div>
-        <div className="flex-column items-center md:flex pt-28 pb-10 bg-gradient-to-br from-[#2d3748] to-[#3b82f6] overflow-hidden">
+        <div className="relative w-full md:items-center md:flex pt-28 pb-10 overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <motion.div
+              className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.2, 1],
+                x: [0, 50, 0],
+                y: [0, 30, 0],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.3, 1],
+                x: [0, -50, 0],
+                y: [0, -30, 0],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.4, 1],
+                rotate: [0, 180, 360],
+              }}
+              transition={{
+                duration: 15,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+          </div>
           {/* Left side content */}
           <div className="hidden md:block left-div lg:ml-16">
             <div className="flex flex-col h-screen w-full justify-center p-8 text-white relative">

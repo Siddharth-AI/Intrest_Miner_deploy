@@ -7,8 +7,8 @@ import {
   useTransform,
   MotionValue,
   useInView,
+  useScroll,
 } from "framer-motion";
-
 import {
   FaRocket,
   FaChartLine,
@@ -21,11 +21,31 @@ import {
   FaCode,
   FaChartBar,
   FaStar,
+  FaFire,
+  FaLightbulb,
+  FaBullseye,
+  FaChartArea,
 } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import { Brain, Menu, Pickaxe, Play, Rocket, X } from "lucide-react";
+import {
+  Brain,
+  Menu,
+  Pickaxe,
+  Play,
+  Rocket,
+  X,
+  Target,
+  TrendingUp,
+  AlertTriangle,
+  Zap,
+  BarChart3,
+  Eye,
+  Activity,
+  Layers,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import GuestHeader from "@/components/layout/GuestHeader";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -42,139 +62,22 @@ const staggerContainer = {
   },
 };
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1 },
+};
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-    setIsMenuOpen(false);
-  };
+const slideInLeft = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0 },
+};
 
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/20 bg-white">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#f1f5f9] to-[rgba(124,58,237,0.01)] shadow-lg" />
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex justify-between items-center h-[70px]">
-          {/* Brand */}
-          <div className="flex items-center space-x-3">
-            <div
-              className="w-10 h-10 backdrop-blur-sm rounded-lg flex items-center justify-center border border-white/30"
-              style={{
-                background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-              }}>
-              <Pickaxe className="w-6 h-6 text-white rounded-lg" />
-            </div>
-            <span
-              className="text-2xl font-bold"
-              style={{
-                background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-              Interest-Miner
-            </span>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={() => scrollToSection("features")}
-              className="text-gray-500 hover:text-blue-400 transition-colors font-medium">
-              Features
-            </button>
-            <button
-              onClick={() => scrollToSection("pricing")}
-              className="text-gray-500 hover:text-blue-400 transition-colors font-medium">
-              Pricing
-            </button>
-            <button
-              onClick={() => scrollToSection("testimonials")}
-              className="text-gray-500 hover:text-blue-400 transition-colors font-medium">
-              Reviews
-            </button>
-            <a
-              href="/login"
-              className="text-gray-500 hover:text-blue-400 transition-colors">
-              <Button
-                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 hover:border-white/50 backdrop-blur-sm hover:shadow-lg transition-all transform "
-                style={{
-                  background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                }}>
-                Start Free Trial
-              </Button>
-            </a>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-white bg-blue-500 rounded-lg transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-white/20 py-4 space-y-4 bg-white backdrop-blur-sm rounded-b-lg mt-2">
-            <button
-              onClick={() => scrollToSection("features")}
-              className="block w-full text-left px-4 py-3 text-black/90 hover:text-blue-500 hover:bg-white/10 transition-colors rounded-lg mx-2">
-              Features
-            </button>
-            <button
-              onClick={() => scrollToSection("pricing")}
-              className="block w-full text-left px-4 py-3 text-black/90 hover:text-blue-500 hover:bg-white/10 transition-colors rounded-lg mx-2">
-              Pricing
-            </button>
-            <button
-              onClick={() => scrollToSection("testimonials")}
-              className="block w-full text-left px-4 py-3 text-black/90 hover:text-blue-500 hover:bg-white/10 transition-colors rounded-lg mx-2">
-              Reviews
-            </button>
-            <div className="px-4 space-y-3 pt-2">
-              <a href="/login" className="block">
-                <Button
-                  variant="ghost"
-                  className="w-full text-black/90 hover:text-blue-500 border border-white/30 hover:border-white/50">
-                  Sign In
-                </Button>
-              </a>
-              <a href="/login" className="block">
-                <Button className="w-full bg-white/20 hover:bg-white/30 text-black/90 border border-white/30 hover:border-white/50 backdrop-blur-sm">
-                  Start Free Trial
-                </Button>
-              </a>
-            </div>
-          </div>
-        )}
-      </nav>
-    </header>
-  );
+const slideInRight = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0 },
 };
 
 const HeroSection = () => {
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = () => {
-    if (message.trim() !== "") {
-      navigate("/login");
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSubmit();
-    }
-  };
-
   const ref = useRef(null);
   const inView = useInView(ref, {
     once: true,
@@ -182,217 +85,259 @@ const HeroSection = () => {
   });
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-[#f1f5f9] to-[rgba(124,58,237,0.11)] py-28">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row items-center gap-12 relative">
-          <div className="flex-1">
-            <div className="text-center lg:text-left mb-4 mt-3">
-              <span className="inline-flex text-[#3b82f6] font-medium mb-1 items-center">
-                <Rocket className="w-5 h-5 mr-2 animate-bounce" />
-                AI-Powered Campaign Generation
-              </span>
-            </div>
+    <section
+      ref={ref}
+      className="pt-7 relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 50, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            x: [0, -50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.4, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      </div>
 
-            <motion.div
-              ref={ref}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
-              variants={staggerContainer}
-              className="text-center lg:text-left">
-              <motion.h1
-                variants={fadeInUp}
-                className="text-5xl md:text-7xl font-bold mb-6 text-[#111827]">
-                Create{" "}
-                <span
-                  style={{
-                    background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}>
-                  Winning
-                </span>{" "}
-                Ad Campaigns in Minutes
-              </motion.h1>
+      <div className="container mx-auto px-6 py-20 relative z-10">
+        <motion.div
+          className="max-w-5xl mx-auto text-center"
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          variants={staggerContainer}>
+          {/* Badge */}
+          <motion.div
+            variants={fadeInUp}
+            className="inline-flex items-center space-x-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-2 mb-8">
+            <Zap className="w-4 h-4 text-purple-400" />
+            <span className="text-purple-300 text-sm font-medium">
+              AI-Powered Facebook Interest Discovery
+            </span>
+          </motion.div>
 
-              <motion.p
-                variants={fadeInUp}
-                className="text-xl text-gray-500 mb-8">
-                The only tool that guarantees profitable Facebook ad targeting
-                for ecommerce. Our AI has analyzed $500M+ in successful
-                campaigns to find winning interests that your competitors don't
-                know about.
-              </motion.p>
+          <motion.h1
+            variants={fadeInUp}
+            className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            <span className="bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+              Find Facebook Interests
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              That Actually Convert
+            </span>
+          </motion.h1>
 
+          <motion.p
+            variants={fadeInUp}
+            className="text-xl md:text-2xl text-slate-300 mb-4 max-w-3xl mx-auto">
+            Stop guessing. Start targeting what works.
+          </motion.p>
+
+          <motion.p
+            variants={fadeInUp}
+            className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto">
+            Find high-intent Facebook interests faster. Reduce fatigue before it
+            kills performance.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            variants={fadeInUp}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <Link to="/login">
               <motion.div
-                variants={fadeInUp}
-                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
-                <Link to="/login">
-                  <Button
-                    size="lg"
-                    className="text-white hover:shadow-xl transition-all transform hover:scale-105 text-lg px-8 py-4"
-                    style={{
-                      background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                    }}>
-                    <Rocket className="w-5 h-5 mr-2" />
-                    Start Free Trial
-                  </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="bg-white/80 backdrop-blur-sm border-white/40 hover:bg-white hover:shadow-lg transition-all text-lg px-8 py-4">
-                  <Play className="w-5 h-5 mr-2" />
-                  Watch Demo
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg shadow-xl shadow-purple-500/50 group">
+                  Try For Free
+                  <motion.span
+                    className="inline-block ml-2"
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}>
+                    →
+                  </motion.span>
                 </Button>
               </motion.div>
-
-              <motion.div
-                variants={fadeInUp}
-                className="flex items-center gap-8 text-sm text-[#2d3748] mb-12 justify-center lg:justify-start">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full border-2 border-white"></div>
-                  </div>
-                  <span>Trusted by 25K+ ecommerce stores</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span>4.9/5 rating</span>
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={fadeInUp}
-                className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center py-4 bg-[#f1f5f9] rounded-sm shadow-xl">
-                <div>
-                  <div className="text-3xl font-bold text-[#111827] mb-2">
-                    $127M+
-                  </div>
-                  <div className="text-sm text-[#2d3748]">
-                    Revenue Generated
-                  </div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-[#111827] mb-2">
-                    40%
-                  </div>
-                  <div className="text-sm text-[#2d3748]">
-                    Avg. Cost Reduction
-                  </div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-[#3b82f6] mb-2">
-                    320%
-                  </div>
-                  <div className="text-sm text-[#2d3748]">
-                    Avg. ROI Increase
-                  </div>
-                </div>
-              </motion.div>
+            </Link>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="outline"
+                className="border-2 border-purple-500 text-purple-300 hover:bg-purple-500/10 px-8 py-6 text-lg"
+                onClick={() =>
+                  document
+                    .getElementById("features")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }>
+                <Play className="w-5 h-5 mr-2" />
+                See How It Works
+              </Button>
             </motion.div>
-          </div>
-
-          <motion.div variants={fadeInUp} className="flex-1 justify-end">
-            <div className="bg-[#f1f5f9] rounded-2xl shadow-2xl p-6 max-w-lg mx-auto">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-start gap-4">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-[#f1f5f9]"
-                    style={{
-                      background: `linear-gradient(135deg, hsl(221.2, 83.2%, 40.3%) 0%, hsl(262.1, 83.3%, 60.8%) 100%)`,
-                    }}>
-                    <FaBrain className="text-xl" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="bg-[#2d3748]/10 rounded-2xl p-4">
-                      <p className="text-[#2d3748]">
-                        Can you help me create an ad campaign for my business?
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 justify-end">
-                  <div className="flex-1">
-                    <div className="bg-[#3b82f6]/10 rounded-2xl p-4">
-                      <p className="text-[#3b82f6]">
-                        I'd love to help! What kind of business do you run?
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-[#f1f5f9]"
-                    style={{
-                      background: `linear-gradient(135deg, hsl(221.2, 83.2%, 40.3%) 0%, hsl(262.1, 83.3%, 60.8%) 100%)`,
-                    }}>
-                    <FaRocket className="text-xl" />
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-[#f1f5f9]"
-                    style={{
-                      background: `linear-gradient(135deg, hsl(221.2, 83.2%, 40.3%) 0%, hsl(262.1, 83.3%, 60.8%) 100%)`,
-                    }}>
-                    <FaBrain className="text-xl" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="bg-[#2d3748]/10 rounded-2xl p-4">
-                      <p className="text-[#2d3748]">
-                        I run an online store selling eco-friendly products
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 justify-end">
-                  <div className="flex-1">
-                    <div className="bg-[#3b82f6]/10 rounded-2xl p-4">
-                      <p className="text-[#3b82f6]">
-                        Great choice! I'll analyze the eco-friendly market and
-                        find the perfect audience interests for your campaign.
-                        What's your target age group?
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-[#f1f5f9]"
-                    style={{
-                      background: `linear-gradient(135deg, hsl(221.2, 83.2%, 40.3%) 0%, hsl(262.1, 83.3%, 60.8%) 100%)`,
-                    }}>
-                    <FaRocket className="text-xl" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative mt-6">
-                <input
-                  type="text"
-                  placeholder="Type your message..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="w-full px-4 py-3 rounded-lg border border-[#2d3748]/20 focus:outline-none focus:border-[#3b82f6]"
-                />
-                <button
-                  onClick={handleSubmit}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#3b82f6] hover:text-[#2d3748]">
-                  <FaRocket className="text-xl" />
-                </button>
-              </div>
-            </div>
           </motion.div>
-          <div className="overflow-hidden">
-            <div className="-z-10 absolute top-[4.2rem] right-2 w-24 h-24 bg-gradient-to-b from-blue-500 to-purple-400 rounded-full opacity-30 animate-float"></div>
-            <div
-              className="-z-10 absolute bottom-4 right-[33rem] w-32 h-32 bg-gradient-to-r from-black to-purple-600 rounded-full opacity-20 animate-float"
-              style={{ animationDelay: "2s" }}></div>
+
+          {/* Stats */}
+          <motion.div
+            variants={fadeInUp}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            {[
+              { value: "10,000+", label: "Interests Analyzed" },
+              { value: "500+", label: "Active Users" },
+              { value: "95%", label: "Accuracy Rate" },
+              { value: "3x", label: "ROI Improvement" },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                variants={scaleIn}
+                className="bg-slate-800/50 backdrop-blur-sm border border-purple-500/20 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300"
+                whileHover={{ y: -5 }}>
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  {stat.value}
+                </div>
+                <div className="text-slate-400 text-sm mt-2">{stat.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const ProblemSection = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.2 });
+
+  const problems = [
+    {
+      icon: <AlertTriangle className="w-8 h-8" />,
+      title: "Endless Interest Testing",
+      description:
+        "You test an interest → it works for a bit → performance drops",
+      color: "from-red-500 to-orange-500",
+    },
+    {
+      icon: <FaFire className="text-3xl" />,
+      title: "Burning Budget on Broad Targeting",
+      description: "You go broad → burn through budget with no clear winners",
+      color: "from-orange-500 to-yellow-500",
+    },
+    {
+      icon: <TrendingUp className="w-8 h-8" />,
+      title: "Short-Lived Winners",
+      description:
+        "You finally find a winner → creative or campaign fatigue kicks in",
+      color: "from-yellow-500 to-green-500",
+    },
+    {
+      icon: <FaBullseye className="text-3xl" />,
+      title: "No Clear Signal",
+      description: "No clear signal on what to test next → back to guessing",
+      color: "from-green-500 to-blue-500",
+    },
+  ];
+
+  return (
+    <section ref={ref} className="py-20 bg-slate-900 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+            backgroundSize: "40px 40px",
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <motion.div
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          variants={staggerContainer}
+          className="max-w-6xl mx-auto">
+          <motion.div variants={fadeInUp} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                Facebook Interest Targeting
+              </span>
+              <br />
+              <span className="text-white">Shouldn't Feel Like Gambling</span>
+            </h2>
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+              Yet for most teams, it looks like this:
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {problems.map((problem, index) => (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                className="relative group"
+                whileHover={{ scale: 1.02 }}>
+                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 hover:border-purple-500/50 transition-all duration-300">
+                  <div
+                    className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${problem.color} mb-4`}>
+                    {problem.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3">
+                    {problem.title}
+                  </h3>
+                  <p className="text-slate-400 leading-relaxed">
+                    {problem.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
 
-          {/* Floating Elements */}
-        </div>
+          <motion.div
+            variants={fadeInUp}
+            className="mt-16 text-center bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-2xl p-10">
+            <h3 className="text-3xl font-bold text-white mb-4">
+              Interest Miner helps you move from{" "}
+              <span className="text-red-400">guesswork</span> to{" "}
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                signal
+              </span>
+            </h3>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+              It uses AI to identify high-intent Facebook interests, analyze
+              what actually works, and predict creative & campaign fatigue
+              before performance drops.
+            </p>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
@@ -400,439 +345,314 @@ const HeroSection = () => {
 
 const FeaturesSection = () => {
   const ref = useRef(null);
-  const inView = useInView(ref, {
-    once: true,
-    amount: 0.1,
-  });
+  const inView = useInView(ref, { once: true, amount: 0.1 });
 
   const features = [
     {
-      icon: FaComments,
-      title: "AI Campaign Assistant",
+      icon: <Target className="w-12 h-12" />,
+      title: "AI Interest Finder",
+      emoji: "🔍",
       description:
-        "Chat with our AI to discover your perfect audience and generate campaign ideas in real-time.",
-      subFeatures: [
-        "Natural language processing",
-        "Industry-specific insights",
+        "Discover Facebook interests with real buying intent, based on your product, audience, and positioning — not just large or popular interests.",
+      highlight:
+        "Instead of testing blindly, you start with interests that are more likely to convert.",
+      benefits: [
+        "AI-powered interest discovery",
+        "Buying intent analysis",
+        "Product-specific targeting",
+        "Audience positioning insights",
       ],
+      gradient: "from-purple-500 to-pink-500",
     },
     {
-      icon: FaSearch,
-      title: "Smart Interest Discovery",
+      icon: <BarChart3 className="w-12 h-12" />,
+      title: "Interest Analytics",
+      emoji: "📊",
+      description: "Understand which interests perform best across campaigns.",
+      highlight: "Spend less time testing. More time scaling.",
+      benefits: [
+        "Compare interest performance",
+        "Spot patterns across winning audiences",
+        "Focus spend on what drives results",
+        "Data-driven optimization",
+      ],
+      gradient: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: <Brain className="w-12 h-12" />,
+      title: "Creative Fatigue Prediction",
+      emoji: "🧠",
       description:
-        "Generate hundreds of targeted Facebook and Google ad interests based on your business profile.",
-      subFeatures: ["500+ interests per campaign", "Real-time trend analysis"],
+        "Creative fatigue doesn't happen overnight — the signals show up early.",
+      highlight:
+        "Our AI models analyze signals to warn you before creatives burn out, so you can refresh assets proactively.",
+      benefits: [
+        "Daily CTR tracking",
+        "Frequency monitoring",
+        "CPM trend analysis",
+        "Engagement pattern detection",
+      ],
+      gradient: "from-green-500 to-emerald-500",
     },
     {
-      icon: FaChartBar,
-      title: "Performance Analytics",
-      description:
-        "Track campaign performance with detailed insights and AI-powered optimization recommendations.",
-      subFeatures: ["Real-time dashboard", "Predictive insights"],
-    },
-    {
-      icon: FaRocket,
-      title: "Social Media Integration",
-      description:
-        "Seamlessly connect with Facebook, Google, and LinkedIn to launch campaigns directly from our platform.",
-      subFeatures: ["One-click campaign launch", "Multi-platform management"],
-    },
-    {
-      icon: FaCode,
-      title: "Automated A/B Testing",
-      description:
-        "Let AI automatically test different ad variations and optimize for better performance.",
-      subFeatures: ["Smart variant generation", "Statistical significance"],
-    },
-    {
-      icon: FaCog,
-      title: "Campaign Templates",
-      description:
-        "Choose from hundreds of proven campaign templates designed for different industries and goals.",
-      subFeatures: ["Industry-specific templates", "Customizable frameworks"],
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-[#f1f5f9]" id="features">
-      <div className="container mx-auto px-4">
-        <motion.div
-          ref={ref}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          variants={staggerContainer}
-          className="text-center mb-16">
-          <motion.h2
-            variants={fadeInUp}
-            className="text-4xl font-bold mb-4 text-[#111827]">
-            Powered by{" "}
-            <span
-              style={{
-                background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-              Advanced AI
-            </span>
-          </motion.h2>
-          <motion.p
-            variants={fadeInUp}
-            className="text-xl text-[#2d3748] max-w-3xl mx-auto">
-            Our intelligent platform combines machine learning with real
-            campaign data to optimize your advertising strategy.
-          </motion.p>
-        </motion.div>
-
-        <motion.div
-          variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              className="bg-[#f1f5f9] rounded-xl p-8 shadow-lg transition-all duration-300 shadow-purple-100">
-              <feature.icon className="text-4xl text-[#3b82f6] mb-6" />
-              <h3 className="text-xl font-semibold mb-4 text-[#111827]">
-                {feature.title}
-              </h3>
-              <p className="text-[#2d3748] mb-6">{feature.description}</p>
-              <ul className="space-y-2">
-                {feature.subFeatures.map((subFeature, subIndex) => (
-                  <li
-                    key={subIndex}
-                    className="flex items-center text-[#2d3748] text-sm">
-                    <FaCheck className="text-[#84cc16] mr-2" />
-                    {subFeature}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-const StarRating = () => (
-  <div className="flex gap-1 text-[#84cc16] mb-4">
-    {[...Array(5)].map((_, i) => (
-      <FaStar key={i} className="text-xl" />
-    ))}
-  </div>
-);
-
-const TestimonialsSection = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, {
-    once: true,
-    amount: 0.1,
-  });
-
-  const testimonials = [
-    {
-      quote:
-        "Our Shopify store went from $50K to $300K monthly revenue using AdGenius AI targeting. The interests it discovered for our jewelry brand were perfect - our cost per acquisition dropped by 65%.",
-      author: "Sarah Johnson",
-      role: "Founder, Luna Jewelry Co.",
-      revenue: "$2.1M Revenue",
-      metric: "65% lower CPA",
-      avatarColor: "bg-[#3b82f6]",
-    },
-    {
-      quote:
-        "As a dropshipping business, finding profitable audiences was our biggest challenge. AdGenius AI found winning interests that our competitors don't know about. Made $180K profit in 3 months.",
-      author: "Michael Chen",
-      role: "Ecommerce Entrepreneur",
-      revenue: "$900K Revenue",
-      metric: "$180K profit in 3 months",
-      avatarColor: "bg-[#84cc16]",
-    },
-    {
-      quote:
-        "This tool single-handedly saved our fashion brand. We were burning money on ads until AdGenius AI showed us the right interests. Now we're scaling profitably at 4x ROAS.",
-      author: "Emily Rodriguez",
-      role: "CMO, StyleVault",
-      revenue: "$1.5M Revenue",
-      metric: "4x ROAS consistently",
-      avatarColor: "bg-[#3b82f6]",
-    },
-    {
-      quote:
-        "Our supplement brand was struggling with Facebook ads. AdGenius AI found health & wellness interests that convert like crazy. Went from losing money to 6-figure months.",
-      author: "David Park",
-      role: "Founder, VitalBoost",
-      revenue: "$850K Revenue",
-      metric: "From losses to 6-figures",
-      avatarColor: "bg-[#84cc16]",
-    },
-    {
-      quote:
-        "The targeting suggestions for our eco-friendly products were mind-blowing. Found audiences we never considered. Scaled from $10K to $80K monthly in 4 months with profitable ads.",
-      author: "Lisa Thompson",
-      role: "CEO, GreenChoice",
-      revenue: "$480K Revenue",
-      metric: "8x revenue growth",
-      avatarColor: "bg-[#3b82f6]",
-    },
-    {
-      quote:
-        "Every ecommerce store owner needs this. The AI found interests that helped us scale our skincare brand to 7-figures. ROI went from negative to 320% positive.",
-      author: "James Wilson",
-      role: "Founder, PureSkin",
-      revenue: "$1.8M Revenue",
-      metric: "320% ROI turnaround",
-      avatarColor: "bg-[#84cc16]",
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-[#f1f5f9]" id="testimonials">
-      <div className="container mx-auto px-4">
-        <motion.div
-          ref={ref}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          variants={staggerContainer}
-          className="text-center mb-16">
-          <motion.h2
-            variants={fadeInUp}
-            className="text-4xl font-bold mb-4 text-[#111827]">
-            Loved by{" "}
-            <span
-              style={{
-                background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-              Marketing Teams
-            </span>
-          </motion.h2>
-          <motion.p
-            variants={fadeInUp}
-            className="text-xl text-[#2d3748] max-w-3xl mx-auto">
-            See how AdGenius AI has transformed campaigns for thousands of
-            businesses worldwide.
-          </motion.p>
-        </motion.div>
-
-        <motion.div
-          variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              className="bg-[#f1f5f9] rounded-xl p-8 shadow-md shadow-purple-100">
-              <StarRating />
-              <p className="text-[#2d3748] mb-6 min-h-[120px]">
-                "{testimonial.quote}"
-              </p>
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-12 h-12 ${testimonial.avatarColor} rounded-full flex items-center justify-center text-[#f1f5f9] text-lg font-semibold`}>
-                  {testimonial.author.charAt(0)}
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-[#111827]">
-                    {testimonial.author}
-                  </h4>
-                  <p className="text-sm text-[#2d3748]">{testimonial.role}</p>
-                  <p className="text-sm text-[#2d3748]">
-                    {testimonial.revenue}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 bg-[#3b82f6]/10 text-[#3b82f6] py-2 px-4 rounded-full text-sm font-medium text-center">
-                {testimonial.metric}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-const SuccessStoriesSection = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, {
-    once: true,
-    amount: 0.1,
-  });
-
-  const stories = [
-    {
-      company: "Luna Jewelry Co.",
-      category: "Jewelry & Accessories",
-      before: "50K",
-      after: "300K",
-      growth: "500%",
-      period: "4 months",
-      challenge: "High competition in jewelry market",
-      solution: "AI discovered untapped vintage jewelry enthusiast audiences",
-    },
-    {
-      company: "VitalBoost Supplements",
-      category: "Health & Wellness",
-      before: "25K",
-      after: "150K",
-      growth: "600%",
-      period: "3 months",
-      challenge: "Facebook kept rejecting health supplement ads",
-      solution: "Found compliant wellness lifestyle interests that convert",
-    },
-    {
-      company: "StyleVault Fashion",
-      category: "Clothing & Apparel",
-      before: "80K",
-      after: "320K",
-      growth: "400%",
-      period: "5 months",
-      challenge: "Saturated fashion market with high ad costs",
-      solution:
-        "Discovered micro-niches within fashion that competitors missed",
+      icon: <Activity className="w-12 h-12" />,
+      title: "Campaign Fatigue Prediction",
+      emoji: "📉",
+      description: "When campaigns start decaying, most teams react too late.",
+      highlight:
+        "Interest Miner monitors performance trends over time and flags when a campaign is entering a fatigue phase.",
+      benefits: [
+        "Pause or adjust earlier",
+        "Reallocate budget smarter",
+        "Avoid sudden ROAS drops",
+        "Proactive optimization",
+      ],
+      gradient: "from-orange-500 to-red-500",
     },
   ];
 
   return (
     <section
-      className="py-20 bg-gradient-to-br from-[#f1f5f9] to-[rgba(124,58,237,0.11)]"
-      id="growth">
-      <div className="container mx-auto px-4">
+      id="features"
+      ref={ref}
+      className="py-20 bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative overflow-hidden">
+      {/* Animated Background */}
+      <motion.div
+        className="absolute top-0 left-0 w-full h-full opacity-20"
+        animate={{
+          backgroundPosition: ["0% 0%", "100% 100%"],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          repeatType: "reverse",
+        }}
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(168, 85, 247, 0.1) 1px, transparent 1px)",
+          backgroundSize: "50px 50px",
+        }}
+      />
+
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div
-          ref={ref}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          variants={staggerContainer}
-          className="text-center mb-16">
-          <motion.h2
-            variants={fadeInUp}
-            className="text-4xl font-bold mb-4 text-[#111827]">
-            Real{" "}
-            <span
-              style={{
-                background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-              Success Stories
-            </span>
-          </motion.h2>
-          <motion.p
-            variants={fadeInUp}
-            className="text-xl text-[#2d3748] max-w-3xl mx-auto">
-            See how ecommerce businesses transformed their ad performance with
-            our AI targeting system.
-          </motion.p>
-        </motion.div>
+          variants={staggerContainer}>
+          <motion.div variants={fadeInUp} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                What You Get
+              </span>
+              <br />
+              <span className="text-white">With Interest Miner</span>
+            </h2>
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+              Powerful AI-driven features to transform your Facebook ad
+              targeting
+            </p>
+          </motion.div>
 
-        <motion.div
-          variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {stories.map((story, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              className="bg-[#f1f5f9] rounded-xl overflow-hidden shadow-lg">
-              <div
-                className={`p-6 text-[#f1f5f9]`}
-                style={{
-                  background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                }}>
-                <h3 className="text-2xl font-bold mb-2">{story.company}</h3>
-                <p className="opacity-90">{story.category}</p>
-              </div>
+          <div className="space-y-24">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                className={`flex flex-col ${
+                  index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                } items-center gap-12`}>
+                {/* Feature Visual */}
+                <motion.div
+                  className="w-full md:w-1/2"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}>
+                  <div
+                    className={`relative bg-gradient-to-br ${feature.gradient} p-1 rounded-3xl shadow-2xl`}>
+                    <div className="bg-slate-900 rounded-3xl p-12">
+                      <motion.div
+                        className="text-white flex items-center justify-center"
+                        animate={{
+                          rotateY: [0, 10, 0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}>
+                        {feature.icon}
+                      </motion.div>
+                      <div className="text-8xl text-center mt-6">
+                        {feature.emoji}
+                      </div>
 
-              <div className="p-6">
-                <div className="flex justify-between mb-6">
-                  <div className="text-center">
-                    <div className="text-[#2d3748] text-sm">Before</div>
-                    <div className="text-2xl font-bold text-[#2d3748]">
-                      ${story.before}
+                      {/* Animated particles */}
+                      <div className="absolute inset-0 overflow-hidden rounded-3xl">
+                        {[...Array(5)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className={`absolute w-2 h-2 bg-gradient-to-br ${feature.gradient} rounded-full`}
+                            animate={{
+                              x: [0, Math.random() * 200 - 100],
+                              y: [0, Math.random() * 200 - 100],
+                              opacity: [0, 1, 0],
+                            }}
+                            transition={{
+                              duration: 3 + Math.random() * 2,
+                              repeat: Infinity,
+                              delay: i * 0.5,
+                            }}
+                            style={{
+                              left: `${Math.random() * 100}%`,
+                              top: `${Math.random() * 100}%`,
+                            }}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-[#2d3748] text-sm">After</div>
-                    <div className="text-2xl font-bold text-[#111827]">
-                      ${story.after}
-                    </div>
-                  </div>
-                </div>
+                </motion.div>
 
-                <div className="bg-[#3b82f6]/10 rounded-lg p-4 mb-6">
-                  <div className="text-3xl font-bold text-[#3b82f6] mb-1">
-                    {story.growth} Growth
+                {/* Feature Content */}
+                <div className="w-full md:w-1/2 space-y-6">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white">
+                    {feature.title}
+                  </h3>
+                  <p className="text-lg text-slate-300 leading-relaxed">
+                    {feature.description}
+                  </p>
+                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-6">
+                    <p className="text-purple-200 font-medium">
+                      {feature.highlight}
+                    </p>
                   </div>
-                  <div className="text-[#2d3748]">
-                    Achieved in {story.period}
+                  <div className="space-y-3">
+                    {feature.benefits.map((benefit, idx) => (
+                      <motion.div
+                        key={idx}
+                        className="flex items-center space-x-3"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={
+                          inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }
+                        }
+                        transition={{ delay: index * 0.1 + idx * 0.1 }}>
+                        <div
+                          className={`w-6 h-6 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center flex-shrink-0`}>
+                          <FaCheck className="text-white text-xs" />
+                        </div>
+                        <span className="text-slate-300">{benefit}</span>
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-[#111827] font-semibold mb-2">
-                      Challenge:
-                    </h4>
-                    <p className="text-[#2d3748]">{story.challenge}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-[#111827] font-semibold mb-2">
-                      Solution:
-                    </h4>
-                    <p className="text-[#2d3748]">{story.solution}</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
   );
 };
 
-const CallToActionSection = () => {
+const WhoItsForSection = () => {
   const ref = useRef(null);
-  const inView = useInView(ref, {
-    once: true,
-    amount: 0.1,
-  });
+  const inView = useInView(ref, { once: true, amount: 0.2 });
+
+  const audience = [
+    {
+      icon: <Rocket className="w-10 h-10" />,
+      title: "Founders",
+      subtitle: "Running Paid Acquisition",
+      description:
+        "Perfect for startup founders who need to maximize every ad dollar and find product-market fit faster.",
+      gradient: "from-purple-500 to-pink-500",
+    },
+    {
+      icon: <FaChartLine className="text-4xl" />,
+      title: "Performance Marketers",
+      subtitle: "& Media Buyers",
+      description:
+        "Built for marketers who live and breathe ROAS, need to scale campaigns efficiently, and stay ahead of fatigue.",
+      gradient: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: <FaUsers className="text-4xl" />,
+      title: "Agencies",
+      subtitle: "Managing Multiple Ad Accounts",
+      description:
+        "Streamline client campaigns, deliver better results, and manage dozens of ad accounts with confidence.",
+      gradient: "from-green-500 to-emerald-500",
+    },
+    {
+      icon: <Target className="w-10 h-10" />,
+      title: "Growth Teams",
+      subtitle: "Tired of Endless Testing",
+      description:
+        "Stop the guesswork. Get data-driven insights that help you test smarter, not harder.",
+      gradient: "from-orange-500 to-red-500",
+    },
+  ];
 
   return (
-    <section className="py-20 bg-[#f1f5f9] ">
-      <div className="container mx-auto px-4">
+    <section ref={ref} className="py-20 bg-slate-900 relative">
+      <div className="container mx-auto px-6">
         <motion.div
-          ref={ref}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          variants={staggerContainer}
-          className="text-center">
-          <motion.h2
-            variants={fadeInUp}
-            className="text-4xl md:text-5xl font-bold mb-6 text-black">
-            Ready to Scale Your Ad Performance?
-          </motion.h2>
-          <motion.p
-            variants={fadeInUp}
-            className="text-xl text-black/90 mb-12 max-w-3xl mx-auto">
-            Join thousands of successful businesses using our AI-powered
-            platform to discover winning ad interests and scale their
-            campaigns.7y{" "}
-          </motion.p>
+          variants={staggerContainer}>
+          <motion.div variants={fadeInUp} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="text-white">Who </span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Interest Miner
+              </span>
+              <span className="text-white"> Is For</span>
+            </h2>
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+              If you already run Facebook ads and care about efficiency, this is
+              for you.
+            </p>
+          </motion.div>
 
-          <motion.div variants={fadeInUp} className="flex justify-center gap-6">
-            <Button
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-[#f1f5f9] px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300">
-              Start Free Trial
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 bg-black text-[#f1f5f9] hover:bg-[#111827] hover:text-[#f1f5f9] px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300">
-              Schedule Demo
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {audience.map((item, index) => (
+              <motion.div
+                key={index}
+                variants={scaleIn}
+                whileHover={{ y: -10, scale: 1.02 }}
+                className="relative group">
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`}
+                />
+                <div className="relative bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300">
+                  <div
+                    className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${item.gradient} mb-6`}>
+                    {item.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-purple-300 font-medium mb-4">
+                    {item.subtitle}
+                  </p>
+                  <p className="text-slate-400 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div variants={fadeInUp} className="mt-16 text-center">
+            <Link to="/login">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-10 py-6 text-lg shadow-xl shadow-purple-500/50">
+                  Start Your Free Trial
+                  <Zap className="w-5 h-5 ml-2" />
+                </Button>
+              </motion.div>
+            </Link>
           </motion.div>
         </motion.div>
       </div>
@@ -840,174 +660,541 @@ const CallToActionSection = () => {
   );
 };
 
-const AnimatedCounter: React.FC<{
-  end: number;
-  duration?: number;
-  suffix?: string;
-  prefix?: string;
-}> = ({ end, duration = 2000, suffix = "", prefix = "" }) => {
-  const [hasAnimated, setHasAnimated] = useState(false);
+const HowItWorksSection = () => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
+  const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  // Use Framer Motion's useSpring for smooth animation
-  const motionValue = useSpring(0, {
-    duration: duration,
-    bounce: 0,
-  });
-
-  const rounded = useTransform(motionValue, (latest) => Math.round(latest));
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    const unsubscribe = rounded.onChange(setDisplayValue);
-    return unsubscribe;
-  }, [rounded]);
-
-  useEffect(() => {
-    if (inView && !hasAnimated) {
-      setHasAnimated(true);
-      motionValue.set(end);
-    }
-  }, [inView, end, motionValue, hasAnimated]);
-
-  return (
-    <span ref={ref} className="text-3xl font-bold text-black tabular-nums">
-      {prefix}
-      {displayValue.toLocaleString()}
-      {suffix}
-    </span>
-  );
-};
-
-// Optimized Statistics Section
-const StatisticsSection: React.FC = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
-
-  const stats = [
+  const steps = [
     {
-      icon: "👥",
-      number: 50000,
-      suffix: "+",
-      label: "Active Users",
-      description: "Marketers trust our platform",
+      number: "01",
+      title: "Connect Your Facebook Ads Account",
+      description:
+        "Securely link your ad account in seconds. We use Facebook's official API - your data stays safe.",
+      icon: <Layers className="w-8 h-8" />,
+      color: "purple",
     },
     {
-      icon: "🔍",
-      number: 2500000,
-      suffix: "+",
-      label: "Interest Searches",
-      description: "Performed this month",
+      number: "02",
+      title: "Tell Us About Your Product",
+      description:
+        "Describe your product, target audience, and goals. Our AI analyzes your business to understand what matters.",
+      icon: <FaLightbulb className="text-3xl" />,
+      color: "pink",
     },
     {
-      icon: "📁",
-      number: 125000,
-      suffix: "+",
-      label: "CSV Exports",
-      description: "Downloaded for campaigns",
+      number: "03",
+      title: "Get AI-Powered Interest Recommendations",
+      description:
+        "Receive a curated list of high-intent Facebook interests tailored to your specific needs - not generic suggestions.",
+      icon: <Target className="w-8 h-8" />,
+      color: "blue",
     },
     {
-      icon: "💼",
-      number: 98,
-      suffix: "%",
-      label: "Success Rate",
-      description: "Campaign improvement",
+      number: "04",
+      title: "Launch & Monitor Campaigns",
+      description:
+        "Test the recommended interests and watch our AI track performance metrics in real-time.",
+      icon: <Eye className="w-8 h-8" />,
+      color: "green",
+    },
+    {
+      number: "05",
+      title: "Get Fatigue Alerts & Optimize",
+      description:
+        "Receive proactive alerts when creative or campaign fatigue is detected, so you can act before performance drops.",
+      icon: <AlertTriangle className="w-8 h-8" />,
+      color: "orange",
     },
   ];
 
   return (
     <section
-      className="py-16 bg-gradient-to-br from-[#f1f5f9] to-[rgba(124,58,237,0.11)]"
-      ref={ref}>
-      <div className="container mx-auto px-6">
+      id="how-it-works"
+      ref={ref}
+      className="py-20 bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative overflow-hidden">
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-black mb-4">
-            Trusted by{" "}
-            <span
-              style={{
-                background: `linear-gradient(135deg, hsl(221.2, 83.2%, 53.3%) 0%, hsl(262.1, 83.3%, 57.8%) 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-              Thousands
-            </span>
-          </h2>
-          <p className="text-xl text-[#2d3748] max-w-3xl mx-auto">
-            Join the growing community of successful marketers using
-            InterestMiner
-          </p>
-        </motion.div>
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          variants={staggerContainer}>
+          <motion.div variants={fadeInUp} className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="text-white">How </span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                It Works
+              </span>
+            </h2>
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+              From setup to optimization in 5 simple steps
+            </p>
+          </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={
-                inView
-                  ? {
-                      opacity: 1,
-                      scale: 1,
-                      transition: {
-                        delay: index * 0.1,
-                        duration: 0.5,
-                        ease: "easeOut",
-                      },
-                    }
-                  : { opacity: 0, scale: 0.8 }
-              }
-              whileHover={{
-                scale: 1,
-                transition: { duration: 0.2 },
-              }}
-              className="text-center text-black bg-white backdrop-blur-sm rounded-2xl p-8 shadow-sm"
-              style={{ willChange: "transform" }}>
-              <div className="text-4xl mb-4">{stat.icon}</div>
-              <div className="mb-2 text-black">
-                <AnimatedCounter
-                  end={stat.number}
-                  suffix={stat.suffix}
-                  duration={2000}
-                />
-              </div>
-              <h3 className="text-xl font-semibold text-black mb-2">
-                {stat.label}
-              </h3>
-              <p className="text-blue-600 text-sm">{stat.description}</p>
-            </motion.div>
-          ))}
-        </div>
+          <div className="max-w-5xl mx-auto relative">
+            {/* Connecting Line */}
+            <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500 via-pink-500 to-blue-500 transform -translate-x-1/2" />
+
+            {steps.map((step, index) => (
+              <motion.div
+                key={index}
+                variants={index % 2 === 0 ? slideInLeft : slideInRight}
+                className={`flex items-center mb-20 last:mb-0 ${
+                  index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                }`}>
+                {/* Content */}
+                <div
+                  className={`w-full md:w-5/12 ${
+                    index % 2 === 0
+                      ? "md:text-right md:pr-12"
+                      : "md:text-left md:pl-12"
+                  }`}>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 hover:border-purple-500/50 transition-all duration-300">
+                    <div
+                      className={`text-6xl font-bold bg-gradient-to-r from-${step.color}-400 to-${step.color}-600 bg-clip-text text-transparent mb-4`}>
+                      {step.number}
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">
+                      {step.title}
+                    </h3>
+                    <p className="text-slate-400 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </motion.div>
+                </div>
+
+                {/* Icon Circle */}
+                <div className="hidden md:flex w-2/12 justify-center items-center">
+                  <motion.div
+                    className={`w-20 h-20 rounded-full bg-gradient-to-br from-${step.color}-500 to-${step.color}-700 flex items-center justify-center text-white shadow-xl shadow-${step.color}-500/50 relative z-10`}
+                    whileHover={{ scale: 1.2, rotate: 360 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20,
+                    }}>
+                    {step.icon}
+                  </motion.div>
+                </div>
+
+                {/* Spacer */}
+                <div className="hidden md:block w-5/12" />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
-export {
-  Header,
-  HeroSection,
-  FeaturesSection,
-  TestimonialsSection,
-  SuccessStoriesSection,
-  CallToActionSection,
-  StatisticsSection,
-};
+const TestimonialsSection = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.1 });
 
-const LandingPageSections = () => {
+  const testimonials = [
+    {
+      quote:
+        "Interest Miner helped us discover audience segments we never thought to test. Our CPAs dropped by 40% in the first month.",
+      name: "Sarah Chen",
+      role: "Performance Marketing Lead",
+      company: "GrowthCo",
+      avatar: "SC",
+      rating: 5,
+      gradient: "from-purple-500 to-pink-500",
+    },
+    {
+      quote:
+        "The fatigue prediction feature is a game-changer. We now refresh creatives before they burn out, not after. ROI increased by 3x.",
+      name: "Michael Rodriguez",
+      role: "Founder & CEO",
+      company: "EcoStore",
+      avatar: "MR",
+      rating: 5,
+      gradient: "from-blue-500 to-cyan-500",
+    },
+    {
+      quote:
+        "Managing 15+ client accounts used to be chaos. Interest Miner brings clarity and predictability to our campaigns.",
+      name: "Emma Thompson",
+      role: "Agency Director",
+      company: "AdScale Agency",
+      avatar: "ET",
+      rating: 5,
+      gradient: "from-green-500 to-emerald-500",
+    },
+    {
+      quote:
+        "Finally, a tool that understands that not all 'big' interests convert. The AI recommendations are incredibly accurate.",
+      name: "David Park",
+      role: "Media Buyer",
+      company: "TechStart",
+      avatar: "DP",
+      rating: 5,
+      gradient: "from-orange-500 to-red-500",
+    },
+  ];
+
   return (
-    <>
-      <HeroSection />
-      <FeaturesSection />
-      <StatisticsSection />
-      <TestimonialsSection />
-      <SuccessStoriesSection />
-      <CallToActionSection />
-    </>
+    <section
+      id="testimonials"
+      ref={ref}
+      className="py-20 bg-slate-900 relative overflow-hidden">
+      {/* Background Decoration */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <motion.div
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          variants={staggerContainer}>
+          <motion.div variants={fadeInUp} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="text-white">Loved by </span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Marketers
+              </span>
+            </h2>
+            <p className="text-xl text-slate-400">
+              See what our users have to say about Interest Miner
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                variants={scaleIn}
+                whileHover={{ y: -10 }}
+                className="relative group">
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${testimonial.gradient} rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300`}
+                />
+                <div className="relative bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300">
+                  {/* Rating */}
+                  <div className="flex space-x-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <FaStar key={i} className="text-yellow-400 text-xl" />
+                    ))}
+                  </div>
+
+                  {/* Quote */}
+                  <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+                    "{testimonial.quote}"
+                  </p>
+
+                  {/* Author */}
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`w-14 h-14 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-white font-bold text-lg`}>
+                      {testimonial.avatar}
+                    </div>
+                    <div>
+                      <div className="text-white font-bold">
+                        {testimonial.name}
+                      </div>
+                      <div className="text-slate-400 text-sm">
+                        {testimonial.role}
+                      </div>
+                      <div className="text-purple-400 text-sm">
+                        {testimonial.company}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
   );
 };
 
-export default LandingPageSections;
+// const PricingSection = () => {
+//   const ref = useRef(null);
+//   const inView = useInView(ref, { once: true, amount: 0.2 });
+//   const navigate = useNavigate();
+
+//   const plans = [
+//     {
+//       name: "Starter",
+//       price: "Free",
+//       period: "forever",
+//       description:
+//         "Perfect for getting started with AI-powered interest discovery",
+//       features: [
+//         "50 AI interest recommendations/month",
+//         "Basic interest analytics",
+//         "Email support",
+//         "1 ad account",
+//         "Community access",
+//       ],
+//       buttonText: "Start Free",
+//       popular: false,
+//       gradient: "from-slate-600 to-slate-700",
+//     },
+//     {
+//       name: "Pro",
+//       price: "$49",
+//       period: "per month",
+//       description:
+//         "For serious marketers who want full power of AI optimization",
+//       features: [
+//         "Unlimited AI interest recommendations",
+//         "Advanced interest analytics",
+//         "Creative fatigue prediction",
+//         "Campaign fatigue prediction",
+//         "Up to 5 ad accounts",
+//         "Priority support",
+//         "Custom reports",
+//         "API access",
+//       ],
+//       buttonText: "Start 14-Day Free Trial",
+//       popular: true,
+//       gradient: "from-purple-600 to-pink-600",
+//     },
+//     {
+//       name: "Agency",
+//       price: "$199",
+//       period: "per month",
+//       description: "Built for agencies managing multiple clients",
+//       features: [
+//         "Everything in Pro",
+//         "Unlimited ad accounts",
+//         "White-label reports",
+//         "Team collaboration",
+//         "Dedicated account manager",
+//         "Custom integrations",
+//         "Advanced API access",
+//         "SLA guarantee",
+//       ],
+//       buttonText: "Contact Sales",
+//       popular: false,
+//       gradient: "from-blue-600 to-cyan-600",
+//     },
+//   ];
+
+//   return (
+//     <section
+//       id="pricing"
+//       ref={ref}
+//       className="py-20 bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative overflow-hidden">
+//       <div className="container mx-auto px-6 relative z-10">
+//         <motion.div
+//           initial="hidden"
+//           animate={inView ? "visible" : "hidden"}
+//           variants={staggerContainer}>
+//           <motion.div variants={fadeInUp} className="text-center mb-16">
+//             <h2 className="text-4xl md:text-5xl font-bold mb-6">
+//               <span className="text-white">Simple, </span>
+//               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+//                 Transparent Pricing
+//               </span>
+//             </h2>
+//             <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+//               Start free. Scale as you grow. Cancel anytime.
+//             </p>
+//           </motion.div>
+
+//           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+//             {plans.map((plan, index) => (
+//               <motion.div
+//                 key={index}
+//                 variants={scaleIn}
+//                 whileHover={{ y: -10, scale: 1.02 }}
+//                 className="relative group">
+//                 {plan.popular && (
+//                   <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+//                     <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+//                       MOST POPULAR
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 <div
+//                   className={`absolute inset-0 bg-gradient-to-br ${
+//                     plan.gradient
+//                   } rounded-3xl blur-xl ${
+//                     plan.popular ? "opacity-40" : "opacity-20"
+//                   } group-hover:opacity-50 transition-opacity duration-300`}
+//                 />
+
+//                 <div
+//                   className={`relative bg-slate-800/80 backdrop-blur-sm border ${
+//                     plan.popular ? "border-purple-500" : "border-slate-700"
+//                   } rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300 h-full flex flex-col`}>
+//                   <div>
+//                     <h3 className="text-2xl font-bold text-white mb-2">
+//                       {plan.name}
+//                     </h3>
+//                     <p className="text-slate-400 text-sm mb-6 h-12">
+//                       {plan.description}
+//                     </p>
+//                     <div className="mb-6">
+//                       <span className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+//                         {plan.price}
+//                       </span>
+//                       <span className="text-slate-400 ml-2">{plan.period}</span>
+//                     </div>
+//                   </div>
+
+//                   <div className="flex-grow">
+//                     <ul className="space-y-4 mb-8">
+//                       {plan.features.map((feature, idx) => (
+//                         <li key={idx} className="flex items-start space-x-3">
+//                           <div
+//                             className={`w-5 h-5 rounded-full bg-gradient-to-br ${plan.gradient} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+//                             <FaCheck className="text-white text-xs" />
+//                           </div>
+//                           <span className="text-slate-300">{feature}</span>
+//                         </li>
+//                       ))}
+//                     </ul>
+//                   </div>
+
+//                   <motion.div
+//                     whileHover={{ scale: 1.02 }}
+//                     whileTap={{ scale: 0.98 }}>
+//                     <Button
+//                       className={`w-full ${
+//                         plan.popular
+//                           ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-xl shadow-purple-500/50"
+//                           : "bg-slate-700 hover:bg-slate-600"
+//                       } text-white py-6 text-lg`}
+//                       onClick={() => navigate("/login")}>
+//                       {plan.buttonText}
+//                     </Button>
+//                   </motion.div>
+//                 </div>
+//               </motion.div>
+//             ))}
+//           </div>
+
+//           <motion.div variants={fadeInUp} className="text-center mt-12">
+//             <p className="text-slate-400">
+//               All plans include a 14-day money-back guarantee. No credit card
+//               required for free tier.
+//             </p>
+//           </motion.div>
+//         </motion.div>
+//       </div>
+//     </section>
+//   );
+// };
+
+const CTASection = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+  const navigate = useNavigate();
+
+  return (
+    <section ref={ref} className="py-20 bg-slate-900 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20"
+          animate={{
+            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          style={{
+            backgroundSize: "200% 200%",
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <motion.div
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          variants={staggerContainer}
+          className="max-w-4xl mx-auto text-center">
+          <motion.div
+            variants={scaleIn}
+            className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-12 md:p-16 shadow-2xl">
+            <motion.h2
+              variants={fadeInUp}
+              className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="text-white">Ready to Stop </span>
+              <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                Guessing
+              </span>
+              <span className="text-white"> and Start </span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Winning
+              </span>
+              <span className="text-white">?</span>
+            </motion.h2>
+
+            <motion.p
+              variants={fadeInUp}
+              className="text-xl text-slate-300 mb-8">
+              Join hundreds of marketers who've transformed their Facebook ad
+              targeting with AI
+            </motion.p>
+
+            <motion.div
+              variants={fadeInUp}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                <Button
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-10 py-6 text-lg shadow-xl shadow-purple-500/50"
+                  onClick={() => navigate("/login")}>
+                  Start Free Trial
+                  <Zap className="w-5 h-5 ml-2" />
+                </Button>
+              </motion.div>
+              <motion.p variants={fadeInUp} className="text-slate-400">
+                No credit card required • 14-day free trial
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              variants={fadeInUp}
+              className="mt-12 grid grid-cols-3 gap-8">
+              {[
+                { icon: <FaCheck />, text: "No setup fees" },
+                { icon: <FaCheck />, text: "Cancel anytime" },
+                { icon: <FaCheck />, text: "24/7 support" },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center space-y-2">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white">
+                    {item.icon}
+                  </div>
+                  <span className="text-slate-300 text-sm">{item.text}</span>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-slate-900 text-white">
+      <HeroSection />
+      <ProblemSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <WhoItsForSection />
+      <TestimonialsSection />
+      {/* <PricingSection /> */}
+      <CTASection />
+    </div>
+  );
+}
