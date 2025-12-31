@@ -87,7 +87,7 @@ const HeroSection = () => {
   return (
     <section
       ref={ref}
-      className="pt-7 relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      className="pt-16 sm:pt-20 md:pt-24 lg:pt-32 relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -130,7 +130,7 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="container mx-auto px-6 py-20 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 lg:py-20 relative z-10">
         <motion.div
           className="max-w-5xl mx-auto text-center"
           initial="hidden"
@@ -139,16 +139,16 @@ const HeroSection = () => {
           {/* Badge */}
           <motion.div
             variants={fadeInUp}
-            className="inline-flex items-center space-x-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-2 mb-8">
+            className="inline-flex items-center space-x-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-6 sm:mb-8">
             <Zap className="w-4 h-4 text-purple-400" />
-            <span className="text-purple-300 text-sm font-medium">
+            <span className="text-purple-300 text-xs sm:text-sm font-medium">
               AI-Powered Facebook Interest Discovery
             </span>
           </motion.div>
 
           <motion.h1
             variants={fadeInUp}
-            className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
             <span className="bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
               Find Facebook Interests
             </span>
@@ -160,13 +160,13 @@ const HeroSection = () => {
 
           <motion.p
             variants={fadeInUp}
-            className="text-xl md:text-2xl text-slate-300 mb-4 max-w-3xl mx-auto">
+            className="text-lg sm:text-xl md:text-2xl text-slate-300 mb-3 sm:mb-4 max-w-3xl mx-auto px-4">
             Stop guessing. Start targeting what works.
           </motion.p>
 
           <motion.p
             variants={fadeInUp}
-            className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto">
+            className="text-base sm:text-lg text-slate-400 mb-8 sm:mb-12 max-w-2xl mx-auto px-4">
             Find high-intent Facebook interests faster. Reduce fatigue before it
             kills performance.
           </motion.p>
@@ -174,12 +174,12 @@ const HeroSection = () => {
           {/* CTA Buttons */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4">
             <Link to="/login">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}>
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg shadow-xl shadow-purple-500/50 group">
+                <Button className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg shadow-xl shadow-purple-500/50 group">
                   Try For Free
                   <motion.span
                     className="inline-block ml-2"
@@ -193,7 +193,7 @@ const HeroSection = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="outline"
-                className="border-2 border-purple-500 text-purple-300 hover:bg-purple-500/10 px-8 py-6 text-lg"
+                className="w-full sm:w-auto border-2 border-purple-500 text-purple-300 hover:bg-purple-500/10 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg"
                 onClick={() =>
                   document
                     .getElementById("features")
@@ -203,29 +203,6 @@ const HeroSection = () => {
                 See How It Works
               </Button>
             </motion.div>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            variants={fadeInUp}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            {[
-              { value: "10,000+", label: "Interests Analyzed" },
-              { value: "500+", label: "Active Users" },
-              { value: "95%", label: "Accuracy Rate" },
-              { value: "3x", label: "ROI Improvement" },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                variants={scaleIn}
-                className="bg-slate-800/50 backdrop-blur-sm border border-purple-500/20 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300"
-                whileHover={{ y: -5 }}>
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  {stat.value}
-                </div>
-                <div className="text-slate-400 text-sm mt-2">{stat.label}</div>
-              </motion.div>
-            ))}
           </motion.div>
         </motion.div>
       </div>
@@ -267,7 +244,9 @@ const ProblemSection = () => {
   ];
 
   return (
-    <section ref={ref} className="py-20 bg-slate-900 relative overflow-hidden">
+    <section
+      ref={ref}
+      className="py-12 sm:py-16 md:py-20 bg-slate-900 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div
@@ -279,41 +258,43 @@ const ProblemSection = () => {
         />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={staggerContainer}
           className="max-w-6xl mx-auto">
-          <motion.div variants={fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <motion.div
+            variants={fadeInUp}
+            className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-4">
               <span className="bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
                 Facebook Interest Targeting
               </span>
               <br />
               <span className="text-white">Shouldn't Feel Like Gambling</span>
             </h2>
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto px-4">
               Yet for most teams, it looks like this:
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {problems.map((problem, index) => (
               <motion.div
                 key={index}
                 variants={fadeInUp}
                 className="relative group"
                 whileHover={{ scale: 1.02 }}>
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 hover:border-purple-500/50 transition-all duration-300">
+                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl sm:rounded-2xl p-6 sm:p-8 hover:border-purple-500/50 transition-all duration-300">
                   <div
-                    className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${problem.color} mb-4`}>
+                    className={`inline-flex p-3 sm:p-4 rounded-xl bg-gradient-to-br ${problem.color} mb-3 sm:mb-4`}>
                     {problem.icon}
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-3">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">
                     {problem.title}
                   </h3>
-                  <p className="text-slate-400 leading-relaxed">
+                  <p className="text-slate-400 leading-relaxed text-sm sm:text-base">
                     {problem.description}
                   </p>
                 </div>
@@ -323,15 +304,15 @@ const ProblemSection = () => {
 
           <motion.div
             variants={fadeInUp}
-            className="mt-16 text-center bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-2xl p-10">
-            <h3 className="text-3xl font-bold text-white mb-4">
+            className="mt-12 sm:mt-16 text-center bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl sm:rounded-2xl p-6 sm:p-10">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4 px-2">
               Interest Miner helps you move from{" "}
               <span className="text-red-400">guesswork</span> to{" "}
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 signal
               </span>
             </h3>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto px-2">
               It uses AI to identify high-intent Facebook interests, analyze
               what actually works, and predict creative & campaign fatigue
               before performance drops.
@@ -415,7 +396,7 @@ const FeaturesSection = () => {
     <section
       id="features"
       ref={ref}
-      className="py-20 bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative overflow-hidden">
+      className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative overflow-hidden">
       {/* Animated Background */}
       <motion.div
         className="absolute top-0 left-0 w-full h-full opacity-20"
@@ -434,41 +415,43 @@ const FeaturesSection = () => {
         }}
       />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={staggerContainer}>
-          <motion.div variants={fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <motion.div
+            variants={fadeInUp}
+            className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-4">
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
                 What You Get
               </span>
               <br />
               <span className="text-white">With Interest Miner</span>
             </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto px-4">
               Powerful AI-driven features to transform your Facebook ad
               targeting
             </p>
           </motion.div>
 
-          <div className="space-y-24">
+          <div className="space-y-16 sm:space-y-20 md:space-y-24">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
                 variants={fadeInUp}
-                className={`flex flex-col ${
-                  index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                } items-center gap-12`}>
+                className={`flex flex-col gap-8 sm:gap-10 md:gap-12 ${
+                  index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
+                } items-center`}>
                 {/* Feature Visual */}
                 <motion.div
-                  className="w-full md:w-1/2"
+                  className="w-full lg:w-1/2"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}>
                   <div
                     className={`relative bg-gradient-to-br ${feature.gradient} p-1 rounded-3xl shadow-2xl`}>
-                    <div className="bg-slate-900 rounded-3xl p-12">
+                    <div className="bg-slate-900 rounded-2xl sm:rounded-3xl p-8 sm:p-10 md:p-12">
                       <motion.div
                         className="text-white flex items-center justify-center"
                         animate={{
@@ -481,7 +464,7 @@ const FeaturesSection = () => {
                         }}>
                         {feature.icon}
                       </motion.div>
-                      <div className="text-8xl text-center mt-6">
+                      <div className="text-6xl sm:text-7xl md:text-8xl text-center mt-4 sm:mt-6">
                         {feature.emoji}
                       </div>
 
@@ -513,19 +496,19 @@ const FeaturesSection = () => {
                 </motion.div>
 
                 {/* Feature Content */}
-                <div className="w-full md:w-1/2 space-y-6">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white">
+                <div className="w-full lg:w-1/2 space-y-4 sm:space-y-6">
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-lg text-slate-300 leading-relaxed">
+                  <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
                     {feature.description}
                   </p>
-                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-6">
-                    <p className="text-purple-200 font-medium">
+                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-lg sm:rounded-xl p-4 sm:p-6">
+                    <p className="text-purple-200 font-medium text-sm sm:text-base">
                       {feature.highlight}
                     </p>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {feature.benefits.map((benefit, idx) => (
                       <motion.div
                         key={idx}
@@ -539,7 +522,9 @@ const FeaturesSection = () => {
                           className={`w-6 h-6 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center flex-shrink-0`}>
                           <FaCheck className="text-white text-xs" />
                         </div>
-                        <span className="text-slate-300">{benefit}</span>
+                        <span className="text-slate-300 text-sm sm:text-base">
+                          {benefit}
+                        </span>
                       </motion.div>
                     ))}
                   </div>
@@ -788,131 +773,131 @@ const HowItWorksSection = () => {
   );
 };
 
-const TestimonialsSection = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.1 });
+// const TestimonialsSection = () => {
+//   const ref = useRef(null);
+//   const inView = useInView(ref, { once: true, amount: 0.1 });
 
-  const testimonials = [
-    {
-      quote:
-        "Interest Miner helped us discover audience segments we never thought to test. Our CPAs dropped by 40% in the first month.",
-      name: "Sarah Chen",
-      role: "Performance Marketing Lead",
-      company: "GrowthCo",
-      avatar: "SC",
-      rating: 5,
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      quote:
-        "The fatigue prediction feature is a game-changer. We now refresh creatives before they burn out, not after. ROI increased by 3x.",
-      name: "Michael Rodriguez",
-      role: "Founder & CEO",
-      company: "EcoStore",
-      avatar: "MR",
-      rating: 5,
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      quote:
-        "Managing 15+ client accounts used to be chaos. Interest Miner brings clarity and predictability to our campaigns.",
-      name: "Emma Thompson",
-      role: "Agency Director",
-      company: "AdScale Agency",
-      avatar: "ET",
-      rating: 5,
-      gradient: "from-green-500 to-emerald-500",
-    },
-    {
-      quote:
-        "Finally, a tool that understands that not all 'big' interests convert. The AI recommendations are incredibly accurate.",
-      name: "David Park",
-      role: "Media Buyer",
-      company: "TechStart",
-      avatar: "DP",
-      rating: 5,
-      gradient: "from-orange-500 to-red-500",
-    },
-  ];
+//   const testimonials = [
+//     {
+//       quote:
+//         "Interest Miner helped us discover audience segments we never thought to test. Our CPAs dropped by 40% in the first month.",
+//       name: "Sarah Chen",
+//       role: "Performance Marketing Lead",
+//       company: "GrowthCo",
+//       avatar: "SC",
+//       rating: 5,
+//       gradient: "from-purple-500 to-pink-500",
+//     },
+//     {
+//       quote:
+//         "The fatigue prediction feature is a game-changer. We now refresh creatives before they burn out, not after. ROI increased by 3x.",
+//       name: "Michael Rodriguez",
+//       role: "Founder & CEO",
+//       company: "EcoStore",
+//       avatar: "MR",
+//       rating: 5,
+//       gradient: "from-blue-500 to-cyan-500",
+//     },
+//     {
+//       quote:
+//         "Managing 15+ client accounts used to be chaos. Interest Miner brings clarity and predictability to our campaigns.",
+//       name: "Emma Thompson",
+//       role: "Agency Director",
+//       company: "AdScale Agency",
+//       avatar: "ET",
+//       rating: 5,
+//       gradient: "from-green-500 to-emerald-500",
+//     },
+//     {
+//       quote:
+//         "Finally, a tool that understands that not all 'big' interests convert. The AI recommendations are incredibly accurate.",
+//       name: "David Park",
+//       role: "Media Buyer",
+//       company: "TechStart",
+//       avatar: "DP",
+//       rating: 5,
+//       gradient: "from-orange-500 to-red-500",
+//     },
+//   ];
 
-  return (
-    <section
-      id="testimonials"
-      ref={ref}
-      className="py-20 bg-slate-900 relative overflow-hidden">
-      {/* Background Decoration */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500 rounded-full blur-3xl" />
-      </div>
+//   return (
+//     <section
+//       id="testimonials"
+//       ref={ref}
+//       className="py-20 bg-slate-900 relative overflow-hidden">
+//       {/* Background Decoration */}
+//       <div className="absolute inset-0 opacity-10">
+//         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl" />
+//         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500 rounded-full blur-3xl" />
+//       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <motion.div
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          variants={staggerContainer}>
-          <motion.div variants={fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="text-white">Loved by </span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Marketers
-              </span>
-            </h2>
-            <p className="text-xl text-slate-400">
-              See what our users have to say about Interest Miner
-            </p>
-          </motion.div>
+//       <div className="container mx-auto px-6 relative z-10">
+//         <motion.div
+//           initial="hidden"
+//           animate={inView ? "visible" : "hidden"}
+//           variants={staggerContainer}>
+//           <motion.div variants={fadeInUp} className="text-center mb-16">
+//             <h2 className="text-4xl md:text-5xl font-bold mb-6">
+//               <span className="text-white">Loved by </span>
+//               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+//                 Marketers
+//               </span>
+//             </h2>
+//             <p className="text-xl text-slate-400">
+//               See what our users have to say about Interest Miner
+//             </p>
+//           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                variants={scaleIn}
-                whileHover={{ y: -10 }}
-                className="relative group">
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${testimonial.gradient} rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300`}
-                />
-                <div className="relative bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300">
-                  {/* Rating */}
-                  <div className="flex space-x-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <FaStar key={i} className="text-yellow-400 text-xl" />
-                    ))}
-                  </div>
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+//             {testimonials.map((testimonial, index) => (
+//               <motion.div
+//                 key={index}
+//                 variants={scaleIn}
+//                 whileHover={{ y: -10 }}
+//                 className="relative group">
+//                 <div
+//                   className={`absolute inset-0 bg-gradient-to-br ${testimonial.gradient} rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300`}
+//                 />
+//                 <div className="relative bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300">
+//                   {/* Rating */}
+//                   <div className="flex space-x-1 mb-4">
+//                     {[...Array(testimonial.rating)].map((_, i) => (
+//                       <FaStar key={i} className="text-yellow-400 text-xl" />
+//                     ))}
+//                   </div>
 
-                  {/* Quote */}
-                  <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-                    "{testimonial.quote}"
-                  </p>
+//                   {/* Quote */}
+//                   <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+//                     "{testimonial.quote}"
+//                   </p>
 
-                  {/* Author */}
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className={`w-14 h-14 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-white font-bold text-lg`}>
-                      {testimonial.avatar}
-                    </div>
-                    <div>
-                      <div className="text-white font-bold">
-                        {testimonial.name}
-                      </div>
-                      <div className="text-slate-400 text-sm">
-                        {testimonial.role}
-                      </div>
-                      <div className="text-purple-400 text-sm">
-                        {testimonial.company}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
+//                   {/* Author */}
+//                   <div className="flex items-center space-x-4">
+//                     <div
+//                       className={`w-14 h-14 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-white font-bold text-lg`}>
+//                       {testimonial.avatar}
+//                     </div>
+//                     <div>
+//                       <div className="text-white font-bold">
+//                         {testimonial.name}
+//                       </div>
+//                       <div className="text-slate-400 text-sm">
+//                         {testimonial.role}
+//                       </div>
+//                       <div className="text-purple-400 text-sm">
+//                         {testimonial.company}
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </motion.div>
+//             ))}
+//           </div>
+//         </motion.div>
+//       </div>
+//     </section>
+//   );
+// };
 
 // const PricingSection = () => {
 //   const ref = useRef(null);
@@ -1192,7 +1177,7 @@ export default function LandingPage() {
       <FeaturesSection />
       <HowItWorksSection />
       <WhoItsForSection />
-      <TestimonialsSection />
+      {/* <TestimonialsSection /> */}
       {/* <PricingSection /> */}
       <CTASection />
     </div>
