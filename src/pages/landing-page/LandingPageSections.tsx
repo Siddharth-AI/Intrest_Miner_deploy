@@ -9,6 +9,9 @@ import {
   useInView,
   useScroll,
 } from "framer-motion";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   FaRocket,
   FaChartLine,
@@ -328,11 +331,30 @@ const FeaturesSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.1 });
 
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, align: "start" },
+    [Autoplay({ delay: 4000, stopOnInteraction: false })]
+  );
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSelect);
+    onSelect();
+  }, [emblaApi]);
+
+  const scrollPrev = () => emblaApi?.scrollPrev();
+  const scrollNext = () => emblaApi?.scrollNext();
+  const scrollTo = (index: number) => emblaApi?.scrollTo(index);
+
   const features = [
     {
       icon: <Target className="w-12 h-12" />,
       title: "AI Interest Finder",
-      emoji: "🔍",
+      image: "/src/assets/images/interest_finder.png",
       description:
         "Discover Facebook interests with real buying intent, based on your product, audience, and positioning — not just large or popular interests.",
       highlight:
@@ -348,7 +370,7 @@ const FeaturesSection = () => {
     {
       icon: <BarChart3 className="w-12 h-12" />,
       title: "Interest Analytics",
-      emoji: "📊",
+      image: "/src/assets/images/interest_performance.png",
       description: "Understand which interests perform best across campaigns.",
       highlight: "Spend less time testing. More time scaling.",
       benefits: [
@@ -362,7 +384,7 @@ const FeaturesSection = () => {
     {
       icon: <Brain className="w-12 h-12" />,
       title: "Creative Fatigue Prediction",
-      emoji: "🧠",
+      image: "/src/assets/images/creative_fatigue.png",
       description:
         "Creative fatigue doesn't happen overnight — the signals show up early.",
       highlight:
@@ -378,7 +400,7 @@ const FeaturesSection = () => {
     {
       icon: <Activity className="w-12 h-12" />,
       title: "Campaign Fatigue Prediction",
-      emoji: "📉",
+      image: "/src/assets/images/campaign_fatiuge.png",
       description: "When campaigns start decaying, most teams react too late.",
       highlight:
         "Interest Miner monitors performance trends over time and flags when a campaign is entering a fatigue phase.",
@@ -415,121 +437,146 @@ const FeaturesSection = () => {
         }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="w-full relative z-10">
         <motion.div
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={staggerContainer}>
           <motion.div
             variants={fadeInUp}
-            className="text-center mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-4">
+            className="text-center mb-12 sm:mb-16 px-4 sm:px-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
                 What You Get
               </span>
               <br />
               <span className="text-white">With Interest Miner</span>
             </h2>
-            <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto px-4">
+            <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto">
               Powerful AI-driven features to transform your Facebook ad
               targeting
             </p>
           </motion.div>
 
-          <div className="space-y-16 sm:space-y-20 md:space-y-24">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                variants={fadeInUp}
-                className={`flex flex-col gap-8 sm:gap-10 md:gap-12 ${
-                  index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
-                } items-center`}>
-                {/* Feature Visual */}
-                <motion.div
-                  className="w-full lg:w-1/2"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}>
+          {/* Carousel Container */}
+          <div className="relative">
+            <div className="overflow-hidden" ref={emblaRef}>
+              <div className="flex">
+                {features.map((feature, index) => (
                   <div
-                    className={`relative bg-gradient-to-br ${feature.gradient} p-1 rounded-3xl shadow-2xl`}>
-                    <div className="bg-slate-900 rounded-2xl sm:rounded-3xl p-8 sm:p-10 md:p-12">
+                    key={index}
+                    className="flex-[0_0_100%] min-w-0 px-4 sm:px-6 lg:px-8">
+                    <motion.div
+                      variants={fadeInUp}
+                      className="flex flex-col lg:flex-row gap-8 sm:gap-10 md:gap-12 items-center max-w-7xl mx-auto">
+                      {/* Feature Visual */}
                       <motion.div
-                        className="text-white flex items-center justify-center"
-                        animate={{
-                          rotateY: [0, 10, 0, -10, 0],
-                        }}
-                        transition={{
-                          duration: 5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}>
-                        {feature.icon}
-                      </motion.div>
-                      <div className="text-6xl sm:text-7xl md:text-8xl text-center mt-4 sm:mt-6">
-                        {feature.emoji}
-                      </div>
-
-                      {/* Animated particles */}
-                      <div className="absolute inset-0 overflow-hidden rounded-3xl">
-                        {[...Array(5)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            className={`absolute w-2 h-2 bg-gradient-to-br ${feature.gradient} rounded-full`}
-                            animate={{
-                              x: [0, Math.random() * 200 - 100],
-                              y: [0, Math.random() * 200 - 100],
-                              opacity: [0, 1, 0],
-                            }}
-                            transition={{
-                              duration: 3 + Math.random() * 2,
-                              repeat: Infinity,
-                              delay: i * 0.5,
-                            }}
-                            style={{
-                              left: `${Math.random() * 100}%`,
-                              top: `${Math.random() * 100}%`,
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Feature Content */}
-                <div className="w-full lg:w-1/2 space-y-4 sm:space-y-6">
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-                    {feature.title}
-                  </h3>
-                  <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-                    {feature.description}
-                  </p>
-                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-lg sm:rounded-xl p-4 sm:p-6">
-                    <p className="text-purple-200 font-medium text-sm sm:text-base">
-                      {feature.highlight}
-                    </p>
-                  </div>
-                  <div className="space-y-2 sm:space-y-3">
-                    {feature.benefits.map((benefit, idx) => (
-                      <motion.div
-                        key={idx}
-                        className="flex items-center space-x-3"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={
-                          inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }
-                        }
-                        transition={{ delay: index * 0.1 + idx * 0.1 }}>
+                        className="w-full lg:w-1/2"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 300 }}>
                         <div
-                          className={`w-6 h-6 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center flex-shrink-0`}>
-                          <FaCheck className="text-white text-xs" />
+                          className={`relative bg-gradient-to-br ${feature.gradient} p-1 shadow-2xl`}>
+                          <div className="bg-slate-900">
+                            <img
+                              src={feature.image}
+                              alt={feature.title}
+                              className="w-full h-full object-contain"
+                            />
+
+                            {/* Animated particles */}
+                            <div className="absolute inset-0 overflow-hidden rounded-3xl">
+                              {[...Array(5)].map((_, i) => (
+                                <motion.div
+                                  key={i}
+                                  className={`absolute w-2 h-2 bg-gradient-to-br ${feature.gradient} rounded-full`}
+                                  animate={{
+                                    x: [0, Math.random() * 200 - 100],
+                                    y: [0, Math.random() * 200 - 100],
+                                    opacity: [0, 1, 0],
+                                  }}
+                                  transition={{
+                                    duration: 3 + Math.random() * 2,
+                                    repeat: Infinity,
+                                    delay: i * 0.5,
+                                  }}
+                                  style={{
+                                    left: `${Math.random() * 100}%`,
+                                    top: `${Math.random() * 100}%`,
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                        <span className="text-slate-300 text-sm sm:text-base">
-                          {benefit}
-                        </span>
                       </motion.div>
-                    ))}
+
+                      {/* Feature Content */}
+                      <div className="w-full lg:w-1/2 space-y-4 sm:space-y-6">
+                        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+                          {feature.title}
+                        </h3>
+                        <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
+                          {feature.description}
+                        </p>
+                        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-lg sm:rounded-xl p-4 sm:p-6">
+                          <p className="text-purple-200 font-medium text-sm sm:text-base">
+                            {feature.highlight}
+                          </p>
+                        </div>
+                        <div className="space-y-2 sm:space-y-3">
+                          {feature.benefits.map((benefit, idx) => (
+                            <motion.div
+                              key={idx}
+                              className="flex items-center space-x-3"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={
+                                inView
+                                  ? { opacity: 1, x: 0 }
+                                  : { opacity: 0, x: -20 }
+                              }
+                              transition={{ delay: index * 0.1 + idx * 0.1 }}>
+                              <div
+                                className={`w-6 h-6 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center flex-shrink-0`}>
+                                <FaCheck className="text-white text-xs" />
+                              </div>
+                              <span className="text-slate-300 text-sm sm:text-base">
+                                {benefit}
+                              </span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
                   </div>
-                </div>
-              </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={scrollPrev}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-slate-800/80 hover:bg-slate-700 border border-slate-600 rounded-full flex items-center justify-center text-white transition-all duration-200 hover:scale-110 z-10">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={scrollNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-slate-800/80 hover:bg-slate-700 border border-slate-600 rounded-full flex items-center justify-center text-white transition-all duration-200 hover:scale-110 z-10">
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Dots Navigation */}
+          <div className="flex justify-center space-x-2 mt-8">
+            {features.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => scrollTo(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  index === selectedIndex
+                    ? "bg-purple-500 scale-125"
+                    : "bg-slate-600 hover:bg-slate-500"
+                }`}
+              />
             ))}
           </div>
         </motion.div>
