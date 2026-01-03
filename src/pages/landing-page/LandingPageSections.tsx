@@ -354,7 +354,7 @@ const FeaturesSection = () => {
     {
       icon: <Target className="w-12 h-12" />,
       title: "AI Interest Finder",
-      image: "/src/assets/images/interest_finder.png",
+      image: "./src/assets/images/interest_finder.png",
       description:
         "Discover Facebook interests with real buying intent, based on your product, audience, and positioning — not just large or popular interests.",
       highlight:
@@ -370,7 +370,7 @@ const FeaturesSection = () => {
     {
       icon: <BarChart3 className="w-12 h-12" />,
       title: "Interest Analytics",
-      image: "/src/assets/images/interest_performance.png",
+      image: "./src/assets/images/interest_performance.png",
       description: "Understand which interests perform best across campaigns.",
       highlight: "Spend less time testing. More time scaling.",
       benefits: [
@@ -384,7 +384,7 @@ const FeaturesSection = () => {
     {
       icon: <Brain className="w-12 h-12" />,
       title: "Creative Fatigue Prediction",
-      image: "/src/assets/images/creative_fatigue.png",
+      image: "./src/assets/images/creative_fatigue.png",
       description:
         "Creative fatigue doesn't happen overnight — the signals show up early.",
       highlight:
@@ -400,7 +400,7 @@ const FeaturesSection = () => {
     {
       icon: <Activity className="w-12 h-12" />,
       title: "Campaign Fatigue Prediction",
-      image: "/src/assets/images/campaign_fatiuge.png",
+      image: "./src/assets/images/campaign_fatiuge.png",
       description: "When campaigns start decaying, most teams react too late.",
       highlight:
         "Interest Miner monitors performance trends over time and flags when a campaign is entering a fatigue phase.",
