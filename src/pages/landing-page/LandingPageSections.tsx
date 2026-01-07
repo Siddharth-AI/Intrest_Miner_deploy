@@ -381,37 +381,37 @@ const FeaturesSection = () => {
       ],
       gradient: "from-blue-500 to-cyan-500",
     },
-    {
-      icon: <Brain className="w-12 h-12" />,
-      title: "Creative Fatigue Prediction",
-      image: "/images/creative_fatigue.png",
-      description:
-        "Creative fatigue doesn't happen overnight — the signals show up early.",
-      highlight:
-        "Our AI models analyze signals to warn you before creatives burn out, so you can refresh assets proactively.",
-      benefits: [
-        "Daily CTR tracking",
-        "Frequency monitoring",
-        "CPM trend analysis",
-        "Engagement pattern detection",
-      ],
-      gradient: "from-green-500 to-emerald-500",
-    },
-    {
-      icon: <Activity className="w-12 h-12" />,
-      title: "Campaign Fatigue Prediction",
-      image: "/images/campaign_fatiuge.png",
-      description: "When campaigns start decaying, most teams react too late.",
-      highlight:
-        "Interest Miner monitors performance trends over time and flags when a campaign is entering a fatigue phase.",
-      benefits: [
-        "Pause or adjust earlier",
-        "Reallocate budget smarter",
-        "Avoid sudden ROAS drops",
-        "Proactive optimization",
-      ],
-      gradient: "from-orange-500 to-red-500",
-    },
+    // {
+    //   icon: <Brain className="w-12 h-12" />,
+    //   title: "Creative Fatigue Prediction",
+    //   image: "/images/creative_fatigue.png",
+    //   description:
+    //     "Creative fatigue doesn't happen overnight — the signals show up early.",
+    //   highlight:
+    //     "Our AI models analyze signals to warn you before creatives burn out, so you can refresh assets proactively.",
+    //   benefits: [
+    //     "Daily CTR tracking",
+    //     "Frequency monitoring",
+    //     "CPM trend analysis",
+    //     "Engagement pattern detection",
+    //   ],
+    //   gradient: "from-green-500 to-emerald-500",
+    // },
+    // {
+    //   icon: <Activity className="w-12 h-12" />,
+    //   title: "Campaign Fatigue Prediction",
+    //   image: "/images/campaign_fatiuge.png",
+    //   description: "When campaigns start decaying, most teams react too late.",
+    //   highlight:
+    //     "Interest Miner monitors performance trends over time and flags when a campaign is entering a fatigue phase.",
+    //   benefits: [
+    //     "Pause or adjust earlier",
+    //     "Reallocate budget smarter",
+    //     "Avoid sudden ROAS drops",
+    //     "Proactive optimization",
+    //   ],
+    //   gradient: "from-orange-500 to-red-500",
+    // },
   ];
 
   return (
