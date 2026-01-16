@@ -578,6 +578,7 @@ const interestAnalysisSlice = createSlice({
       .addCase(getInterestAnalysisResult.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        state.analysisResult = null;
       })
 
       // Get Analysis History

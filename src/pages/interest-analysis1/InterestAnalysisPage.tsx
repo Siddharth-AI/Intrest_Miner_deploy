@@ -44,7 +44,6 @@ import { InterestPerformanceTab } from "./InterestPerformanceTab";
 import { InterestDetailModal } from "./InterestDetailModal";
 import { InterestBreakdownModal } from "./InterestBreakdownModal";
 import { openPricingModal } from "../../../store/features/pricingModalSlice";
-import Portal from "@/components/ui/Portal";
 
 export const InterestAnalysisPage: React.FC = () => {
   const navigate = useNavigate();
@@ -82,7 +81,6 @@ export const InterestAnalysisPage: React.FC = () => {
   const [campaignViewTab, setCampaignViewTab] = useState<
     "untracked" | "tracked"
   >("untracked");
-  const [mainTab, setMainTab] = useState<"available" | "tracked">("available");
 
   // Check Facebook connection and fetch data
   useEffect(() => {
@@ -273,7 +271,7 @@ export const InterestAnalysisPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-gray-950 dark:via-gray-900 dark:to-slate-900">
       {/* Header */}
-      <div className="z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -337,44 +335,13 @@ export const InterestAnalysisPage: React.FC = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Main Tabs - Available Campaigns vs Tracked Campaigns */}
-        <div className="mb-6">
-          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
-            <button
-              onClick={() => setMainTab("available")}
-              className={`px-6 py-3 font-semibold text-sm transition-all border-b-2 ${
-                mainTab === "available"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-              }`}>
-              Available Campaigns
-              {availableCampaigns.filter((c) => !c.is_tracking).length > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">
-                  {availableCampaigns.filter((c) => !c.is_tracking).length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setMainTab("tracked")}
-              className={`px-6 py-3 font-semibold text-sm transition-all border-b-2 ${
-                mainTab === "tracked"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-              }`}>
-              Tracked Campaigns analysis
-              {trackedCampaigns.length > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">
-                  {trackedCampaigns.length}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Available Campaigns Tab Content */}
-        {mainTab === "available" && (
-          <div className="mb-8">
+        {/* Available Campaigns Section */}
+        {/* Available Campaigns Section */}
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Available Campaigns
+            </h2>
             <div className="flex gap-3">
               {selectedCampaignIds.length > 0 && (
                 <>
@@ -646,15 +613,15 @@ export const InterestAnalysisPage: React.FC = () => {
               </p>
             </div>
           )}
-          </div>
-        )}
+        </div>
 
-        {/* Tracked Campaigns Tab Content */}
-        {mainTab === "tracked" && trackedCampaigns.length > 0 && (
+        {/* Tracked Campaigns Section */}
+        {/* Tracked Campaigns Section with Tabs */}
+        {trackedCampaigns.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Campaigns Analysis
+                Tracked Campaigns
               </h2>
 
               {/* 🔥 ADD THIS ENTIRE BLOCK */}
@@ -776,8 +743,6 @@ export const InterestAnalysisPage: React.FC = () => {
       {/* Stop Tracking Confirmation Modal */}
       <AnimatePresence>
         {showStopModal && (
-        <Portal>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -815,7 +780,6 @@ export const InterestAnalysisPage: React.FC = () => {
               </div>
             </motion.div>
           </motion.div>
-        </Portal>
         )}
       </AnimatePresence>
 
