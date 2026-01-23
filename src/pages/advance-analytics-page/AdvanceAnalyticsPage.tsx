@@ -56,6 +56,8 @@ import {
   checkFacebookStatus,
   clearCache,
   fetchInsightsDebounced,
+  fetchUserBusinesses, // NEW
+  clearBusinessError, // NEW
 } from "../../../store/features/facebookAdsSlice";
 import { useToast } from "@/hooks/use-toast";
 import { Download, RefreshCw } from "lucide-react";
@@ -94,6 +96,8 @@ const AdvanceAnalyticsPage: React.FC = () => {
     dateFilter, // 🔥 ADD THIS
     customDateRange, // 🔥 ADD THIS
     insightsCache,
+    facebookAuth, // NEW
+    businessState, // NEW
   } = useAppSelector((state) => state.facebookAds);
 
   // 🔥 Generate cache key
@@ -177,18 +181,45 @@ const AdvanceAnalyticsPage: React.FC = () => {
     }
   }, [dispatch]);
 
-  // NEW - Use Facebook auth state
-  const { facebookAuth } = useAppSelector((state) => state.facebookAds);
+  // NEW - Use Facebook auth state (MOVED AFTER Facebook status check)
   const hasFacebookConnection =
     facebookAuth.isConnected && facebookAuth.status?.facebook_token_valid;
   const hasActiveSubscription = userProfile?.subscription_status === "active";
 
+  // NEW: Fetch businesses when Facebook connection is established
+  useEffect(() => {
+    if (hasFacebookConnection) {
+      dispatch(fetchUserBusinesses());
+    }
+  }, [dispatch, hasFacebookConnection]);
+
+  // NEW: Show business modal if no business selected
+  useEffect(() => {
+    if (businessState.businesses.length > 0 && !businessState.selectedBusiness && !businessState.loading) {
+      console.log("🔄 AdvanceAnalytics: No business selected, showing business modal");
+      // Business modal will be handled by sidebar now
+    }
+  }, [businessState.businesses, businessState.selectedBusiness, businessState.loading]);
+
+  // NEW: Handle business errors
+  useEffect(() => {
+    if (businessState.error) {
+      toast({
+        title: "Business Error",
+        description: businessState.error,
+        variant: "destructive",
+      });
+    }
+  }, [businessState.error, toast]);
+
   // Add these useEffects after your existing ones
   useEffect(() => {
-    if (adAccounts.length === 0 && hasFacebookConnection) {
+    if (hasFacebookConnection && businessState.selectedBusiness && adAccounts.length === 0) {
+      console.log("🔄 AdvanceAnalytics: Fetching ad accounts...");
+      console.log("📊 Selected Business:", businessState.selectedBusiness.business_name);
       dispatch(fetchAdAccounts());
     }
-  }, [dispatch, adAccounts.length, hasFacebookConnection]);
+  }, [dispatch, hasFacebookConnection, businessState.selectedBusiness, adAccounts.length]);
 
   // 🔥 ENHANCED: Auto-select first account with toast notification
   useEffect(() => {
@@ -326,9 +357,10 @@ const AdvanceAnalyticsPage: React.FC = () => {
       setCurrentPage(1);
       setInsightsRequested(false);
 
-      // Debounce insights fetching
-      accountChangeTimerRef.current = setTimeout(() => {
-        if (accountId && hasFacebookConnection && hasActiveSubscription) {
+      // Only proceed if business is selected
+      if (businessState.selectedBusiness && accountId && hasFacebookConnection && hasActiveSubscription) {
+        // Debounce insights fetching
+        accountChangeTimerRef.current = setTimeout(() => {
           dispatch(fetchCampaigns(accountId));
 
           // Only fetch insights if needed
@@ -341,10 +373,12 @@ const AdvanceAnalyticsPage: React.FC = () => {
             );
             setInsightsRequested(true);
           }
-        }
-      }, 300); // 300ms debounce for account changes
+        }, 300); // 300ms debounce for account changes
+      } else {
+        console.log("⚠️ AdvanceAnalytics: Cannot fetch insights - No business selected or no connection");
+      }
     },
-    [dispatch, shouldLoadInsights, hasFacebookConnection, hasActiveSubscription]
+    [dispatch, shouldLoadInsights, hasFacebookConnection, hasActiveSubscription, businessState.selectedBusiness]
   );
 
   const formatCurrency = (amount: number | string) => {
@@ -575,6 +609,15 @@ const AdvanceAnalyticsPage: React.FC = () => {
       return;
     }
 
+    if (!businessState.selectedBusiness) {
+      toast({
+        title: "No Business Selected",
+        description: "Please select a business first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!hasFacebookConnection || !hasActiveSubscription) {
       toast({
         title: "Access Denied",
@@ -584,7 +627,8 @@ const AdvanceAnalyticsPage: React.FC = () => {
       return;
     }
 
-    console.log("🔄 User triggered force refresh");
+    console.log("🔄 AdvanceAnalytics: User triggered force refresh");
+    console.log("📊 Selected Business:", businessState.selectedBusiness.business_name);
 
     // Dispatch with forceRefresh flag
     dispatch(
@@ -596,8 +640,7 @@ const AdvanceAnalyticsPage: React.FC = () => {
 
     toast({
       title: "Refreshing Data",
-      description:
-        "Fetching fresh insights from Meta and running AI analysis...",
+      description: `Fetching fresh insights for ${businessState.selectedBusiness.business_name}...`,
     });
   };
 
@@ -1626,6 +1669,62 @@ const AdvanceAnalyticsPage: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* NEW: Business Display */}
+            {businessState.selectedBusiness && (
+              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-4 border border-orange-200 dark:border-orange-800">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-orange-100 dark:bg-orange-800/30 rounded-lg">
+                      <svg className="w-5 h-5 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-orange-900 dark:text-orange-300">
+                        🏢 Your Business: {businessState.selectedBusiness.business_name}
+                      </div>
+                      <div className="text-xs text-orange-700 dark:text-orange-400 mt-1">
+                        Business ID: {businessState.selectedBusiness.business_id}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Business Loading State */}
+            {businessState.loading && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
+                <div className="flex items-center gap-3">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></div>
+                  <div className="text-sm font-medium text-yellow-900 dark:text-yellow-300">
+                    ⏳ Loading businesses...
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Business Error State */}
+            {!businessState.loading && !businessState.selectedBusiness && businessState.businesses.length === 0 && hasFacebookConnection && (
+              <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 border border-red-200 dark:border-red-800">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-100 dark:bg-red-800/30 rounded-lg">
+                    <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-red-900 dark:text-red-300">
+                      ❌ No businesses found
+                    </div>
+                    <div className="text-xs text-red-700 dark:text-red-400 mt-1">
+                      Please ensure your Facebook account has business management permissions.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Connected Account Selector - No gap, rounded bottom */}
             {hasFacebookConnection && (
@@ -2728,6 +2827,7 @@ const AdvanceAnalyticsPage: React.FC = () => {
               onExport={handleExportData}
               campaignCount={filteredCampaigns.length}
             /> */}
+
           </div>
         </div>
       </AnimatePresence>

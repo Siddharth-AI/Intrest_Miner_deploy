@@ -24,6 +24,25 @@ export interface FacebookConnection {
   updated_at: string;
 }
 
+// NEW: Business interfaces
+export interface MetaBusiness {
+  id: number;
+  user_uuid: string;
+  business_id: string;
+  business_name: string;
+  is_selected: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BusinessState {
+  businesses: MetaBusiness[];
+  selectedBusiness: MetaBusiness | null;
+  loading: boolean;
+  error: string | null;
+}
+
 export interface FacebookStatus {
   facebook_connected: boolean;
   facebook_token_valid: boolean;
@@ -233,6 +252,7 @@ interface FacebookAdsState {
   lastUpdated: string | null;
 
   facebookAuth: FacebookAuthState;
+  businessState: BusinessState; // NEW: Business state
 
   // Your existing AnalyticsPage fields
   campaignAnalysis: Campaign[];
@@ -405,6 +425,14 @@ const initialState: FacebookAdsState = {
     error: null,
   },
 
+  // NEW: Business state initialization
+  businessState: {
+    businesses: [],
+    selectedBusiness: null,
+    loading: false,
+    error: null,
+  },
+
   // 🔥 NEW: Additional campaign categories
   excellentCampaigns: [],
   moderateCampaigns: [],
@@ -522,6 +550,75 @@ export const setPrimaryFacebookConnection = createAsyncThunk(
       return { success: true, connectionId };
     } catch (err: any) {
       return rejectWithValue(err.message || "Failed to set primary connection");
+    }
+  }
+);
+
+// NEW: Business thunks
+export const fetchUserBusinesses = createAsyncThunk(
+  "facebookAds/fetchUserBusinesses",
+  async (_, { rejectWithValue }) => {
+    const token = getAccessToken();
+    if (!token) return rejectWithValue("No access token found");
+
+    try {
+      console.log("🔄 Fetching user businesses...");
+      const res = await fetch(`${import.meta.env.VITE_INTEREST_MINER_API_URL}/api/meta/businesses`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const data = await res.json();
+      console.log(`📊 Found ${data.data.businesses.length} businesses`);
+      return data.data;
+    } catch (err: any) {
+      console.error("❌ Failed to fetch businesses:", err.message);
+      return rejectWithValue(err.message || "Failed to fetch businesses");
+    }
+  }
+);
+
+export const selectBusiness = createAsyncThunk(
+  "facebookAds/selectBusiness",
+  async (businessId: string, { rejectWithValue }) => {
+    const token = getAccessToken();
+    if (!token) return rejectWithValue("No access token found");
+
+    try {
+      console.log(`🔄 Selecting business: ${businessId}`);
+      const res = await fetch(`${import.meta.env.VITE_INTEREST_MINER_API_URL}/api/meta/select-business`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ business_id: businessId }),
+      });
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const data = await res.json();
+      console.log(`✅ Business selected: ${data.data.selectedBusiness.business_name}`);
+      return data.data;
+    } catch (err: any) {
+      console.error("❌ Failed to select business:", err.message);
+      return rejectWithValue(err.message || "Failed to select business");
+    }
+  }
+);
+
+export const getSelectedBusinessInfo = createAsyncThunk(
+  "facebookAds/getSelectedBusinessInfo",
+  async (_, { rejectWithValue }) => {
+    const token = getAccessToken();
+    if (!token) return rejectWithValue("No access token found");
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_INTEREST_MINER_API_URL}/api/meta/selected-business`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const data = await res.json();
+      return data.data;
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Failed to get selected business");
     }
   }
 );
@@ -902,7 +999,12 @@ const facebookAdsSlice = createSlice({
     },
     setExportOptions: (state, action: PayloadAction<{ includeCampaignDetails: boolean; includeAIAnalysis: boolean }>) => {
       state.exportModal.options = action.payload;
-    }
+    },
+
+    // NEW: Business reducers
+    clearBusinessError: (state) => {
+      state.businessState.error = null;
+    },
 
   },
   extraReducers: (builder) => {
@@ -1086,6 +1188,59 @@ const facebookAdsSlice = createSlice({
         state.facebookAuth.isLoading = false;
         state.facebookAuth.error = action.payload as string;
       })
+
+      // NEW: Business-related cases
+      .addCase(fetchUserBusinesses.pending, (state) => {
+        state.businessState.loading = true;
+        state.businessState.error = null;
+      })
+      .addCase(fetchUserBusinesses.fulfilled, (state, action) => {
+        state.businessState.loading = false;
+        state.businessState.businesses = action.payload.businesses;
+        state.businessState.selectedBusiness = action.payload.selectedBusiness;
+      })
+      .addCase(fetchUserBusinesses.rejected, (state, action) => {
+        state.businessState.loading = false;
+        state.businessState.error = action.payload as string;
+      })
+      
+      .addCase(selectBusiness.pending, (state) => {
+        state.businessState.loading = true;
+        state.businessState.error = null;
+      })
+      .addCase(selectBusiness.fulfilled, (state, action) => {
+        state.businessState.loading = false;
+        state.businessState.selectedBusiness = action.payload.selectedBusiness;
+        
+        // Update businesses list with new selection state
+        if (action.payload.businesses) {
+          state.businessState.businesses = action.payload.businesses;
+        } else {
+          // If businesses array not provided, manually update the selection
+          state.businessState.businesses = state.businessState.businesses.map(business => ({
+            ...business,
+            is_selected: business.business_id === action.payload.selectedBusiness?.business_id
+          }));
+        }
+        
+        // Clear ad accounts when business changes
+        state.adAccounts = [];
+        state.selectedAccount = "";
+        state.campaigns = [];
+        state.insights = [];
+        state.campaignInsights = [];
+        state.campaignInsightstotal = [];
+        state.aggregatedStats = null;
+        console.log("✅ Business changed - cleared ad account data");
+      })
+      .addCase(selectBusiness.rejected, (state, action) => {
+        state.businessState.loading = false;
+        state.businessState.error = action.payload as string;
+      })
+
+      .addCase(getSelectedBusinessInfo.fulfilled, (state, action) => {
+        state.businessState.selectedBusiness = action.payload.selectedBusiness;
+      })
   }
 });
 
@@ -1113,6 +1268,8 @@ export const {
   openExportModal,
   closeExportModal,
   setExportOptions,
+  // NEW: Business exports
+  clearBusinessError,
 
 } = facebookAdsSlice.actions;
 

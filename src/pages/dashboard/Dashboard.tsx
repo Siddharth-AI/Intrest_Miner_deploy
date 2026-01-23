@@ -25,6 +25,9 @@ import {
   setSelectedCampaign,
   fetchCampaignInsights,
   checkFacebookStatus,
+  fetchUserBusinesses, // NEW
+  selectBusiness, // NEW
+  clearBusinessError, // NEW
 } from "../../../store/features/facebookAdsSlice";
 import {
   fetchOnboardingStatus,
@@ -513,6 +516,7 @@ const Dashboard: React.FC = () => {
     loading,
     lastUpdated,
     facebookAuth,
+    businessState, // NEW: Business state
   } = useAppSelector((state) => state.facebookAds);
   const { hasSeenOnboarding, loading: onboardingLoading } = useAppSelector(
     (state) => state.onboarding
@@ -579,6 +583,20 @@ const Dashboard: React.FC = () => {
     }
   }, [dispatch]);
 
+  // Facebook connection check - MOVED AFTER Facebook status check
+  // NEW - Use Facebook auth state
+  const isConnected =
+    facebookAuth.isConnected && facebookAuth.status?.facebook_token_valid;
+  console.log(isConnected, "isconnected=>>>>>>>>>>>>");
+  const hasFacebookConnection = isConnected;
+
+  // NEW: Fetch businesses when Facebook connection is established
+  useEffect(() => {
+    if (hasFacebookConnection) {
+      dispatch(fetchUserBusinesses());
+    }
+  }, [dispatch, hasFacebookConnection]);
+
   // Show tooltip on mount
   useEffect(() => {
     setShowHelpTooltip(true);
@@ -599,13 +617,6 @@ const Dashboard: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Facebook connection check
-  // NEW - Use Facebook auth state
-  const isConnected =
-    facebookAuth.isConnected && facebookAuth.status?.facebook_token_valid;
-  console.log(isConnected, "isconnected=>>>>>>>>>>>>");
-  const hasFacebookConnection = isConnected;
-
   const [isRefreshing, setIsRefreshing] = React.useState(false);
 
   // Check if user has seen onboarding
@@ -620,13 +631,33 @@ const Dashboard: React.FC = () => {
 
   const router = useNavigate();
 
+  // NEW: Show business modal if no business selected
+  useEffect(() => {
+    if (businessState.businesses.length > 0 && !businessState.selectedBusiness && !businessState.loading) {
+      console.log("🔄 No business selected, business modal will be handled by sidebar");
+      // Business modal will be handled by sidebar now
+    }
+  }, [businessState.businesses, businessState.selectedBusiness, businessState.loading]);
+
+  // NEW: Handle business errors
+  useEffect(() => {
+    if (businessState.error) {
+      toast({
+        title: "Business Error",
+        description: businessState.error,
+        variant: "destructive",
+      });
+    }
+  }, [businessState.error, toast]);
+
   useEffect(() => {
     const authToken = localStorage.getItem("token");
-    if (authToken && hasFacebookConnection && adAccounts.length === 0) {
-      console.log("🔄 Fetching ad accounts...");
+    if (authToken && hasFacebookConnection && businessState.selectedBusiness && adAccounts.length === 0) {
+      console.log("🔄 Dashboard: Fetching ad accounts...");
+      console.log("📊 Selected Business:", businessState.selectedBusiness.business_name);
       dispatch(fetchAdAccounts());
     }
-  }, [dispatch, hasFacebookConnection, adAccounts.length]);
+  }, [dispatch, hasFacebookConnection, businessState.selectedBusiness, adAccounts.length]);
 
   useEffect(() => {
     if (adAccounts.length > 0 && !selectedAccount) {
@@ -973,6 +1004,99 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
                 </motion.div>
+
+                {/* NEW: Business Selection Display */}
+                {businessState.selectedBusiness && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className={`relative rounded-2xl p-4 mb-6 ${
+                      isDarkMode
+                        ? "bg-blue-900/20 border border-blue-700/50"
+                        : "bg-blue-50 border border-blue-200"
+                    }`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${
+                          isDarkMode ? "bg-blue-800/30" : "bg-blue-100"
+                        }`}>
+                          <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className={`text-sm font-medium ${
+                            isDarkMode ? "text-blue-300" : "text-blue-900"
+                          }`}>
+                            🏢 Your Business: {businessState.selectedBusiness.business_name}
+                          </div>
+                          <div className={`text-xs ${
+                            isDarkMode ? "text-blue-400" : "text-blue-700"
+                          } mt-1`}>
+                            Business ID: {businessState.selectedBusiness.business_id}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Business Loading State */}
+                {businessState.loading && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`relative rounded-2xl p-4 mb-6 ${
+                      isDarkMode
+                        ? "bg-yellow-900/20 border border-yellow-700/50"
+                        : "bg-yellow-50 border border-yellow-200"
+                    }`}>
+                    <div className="flex items-center gap-3">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></div>
+                      <div className={`text-sm font-medium ${
+                        isDarkMode ? "text-yellow-300" : "text-yellow-900"
+                      }`}>
+                        ⏳ Loading businesses...
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Business Error State */}
+                {!businessState.loading && !businessState.selectedBusiness && businessState.businesses.length === 0 && hasFacebookConnection && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`relative rounded-2xl p-4 mb-6 ${
+                      isDarkMode
+                        ? "bg-red-900/20 border border-red-700/50"
+                        : "bg-red-50 border border-red-200"
+                    }`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${
+                        isDarkMode ? "bg-red-800/30" : "bg-red-100"
+                      }`}>
+                        <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className={`text-sm font-medium ${
+                          isDarkMode ? "text-red-300" : "text-red-900"
+                        }`}>
+                          ❌ No businesses found
+                        </div>
+                        <div className={`text-xs ${
+                          isDarkMode ? "text-red-400" : "text-red-700"
+                        } mt-1`}>
+                          Please ensure your Facebook account has business management permissions.
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Selectors */}
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}

@@ -39,16 +39,20 @@ import {
 import {
   fetchAdAccounts,
   checkFacebookStatus,
+  fetchUserBusinesses, // NEW
+  clearBusinessError, // NEW
 } from "../../../store/features/facebookAdsSlice";
 import { InterestPerformanceTab } from "./InterestPerformanceTab";
 import { InterestDetailModal } from "./InterestDetailModal";
 import { InterestBreakdownModal } from "./InterestBreakdownModal";
 import { openPricingModal } from "../../../store/features/pricingModalSlice";
 import Portal from "@/components/ui/Portal";
+import { useToast } from "@/hooks/use-toast"; // NEW
 
 export const InterestAnalysisPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { toast } = useToast(); // NEW
 
   // Redux state
   const {
@@ -69,7 +73,7 @@ export const InterestAnalysisPage: React.FC = () => {
     selectedCampaignForView,
   } = useAppSelector((state) => state.interestAnalysis);
 
-  const { adAccounts, facebookAuth } = useAppSelector(
+  const { adAccounts, facebookAuth, businessState } = useAppSelector( // NEW: Added businessState
     (state) => state.facebookAds
   );
 
@@ -87,8 +91,36 @@ export const InterestAnalysisPage: React.FC = () => {
   // Check Facebook connection and fetch data
   useEffect(() => {
     dispatch(checkFacebookStatus());
-    dispatch(fetchAdAccounts());
   }, [dispatch]);
+
+  // Define Facebook connection status
+  const hasFacebookConnection = facebookAuth.isConnected && facebookAuth.status?.facebook_token_valid;
+
+  // NEW: Fetch businesses when Facebook connection is established
+  useEffect(() => {
+    if (hasFacebookConnection) {
+      dispatch(fetchUserBusinesses());
+    }
+  }, [dispatch, hasFacebookConnection]);
+
+  // NEW: Show business modal if no business selected
+  useEffect(() => {
+    if (businessState.businesses.length > 0 && !businessState.selectedBusiness && !businessState.loading) {
+      console.log("🔄 InterestAnalysis: No business selected, showing business modal");
+      // Business modal will be handled by sidebar now
+    }
+  }, [businessState.businesses, businessState.selectedBusiness, businessState.loading]);
+
+  // NEW: Handle business errors
+  useEffect(() => {
+    if (businessState.error) {
+      toast({
+        title: "Business Error",
+        description: businessState.error,
+        variant: "destructive",
+      });
+    }
+  }, [businessState.error, toast]);
 
   // Auto-select first ad account
   useEffect(() => {
@@ -96,6 +128,15 @@ export const InterestAnalysisPage: React.FC = () => {
       dispatch(setSelectedAdAccount(adAccounts[0].id));
     }
   }, [adAccounts, selectedAdAccount, dispatch]);
+
+  // Fetch ad accounts when business is selected
+  useEffect(() => {
+    if (hasFacebookConnection && businessState.selectedBusiness && adAccounts.length === 0) {
+      console.log("🔄 InterestAnalysis: Fetching ad accounts...");
+      console.log("📊 Selected Business:", businessState.selectedBusiness.business_name);
+      dispatch(fetchAdAccounts());
+    }
+  }, [dispatch, hasFacebookConnection, businessState.selectedBusiness, adAccounts.length]);
 
   // Fetch campaigns when ad account changes
   useEffect(() => {
@@ -302,6 +343,62 @@ export const InterestAnalysisPage: React.FC = () => {
               </select>
             )}
           </div>
+
+          {/* NEW: Business Display */}
+          {businessState.selectedBusiness && (
+            <div className="mb-6 bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-100 dark:bg-green-800/30 rounded-lg">
+                    <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-green-900 dark:text-green-300">
+                      🏢 Your Business: {businessState.selectedBusiness.business_name}
+                    </div>
+                    <div className="text-xs text-green-700 dark:text-green-400 mt-1">
+                      Business ID: {businessState.selectedBusiness.business_id}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Business Loading State */}
+          {businessState.loading && (
+            <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></div>
+                <div className="text-sm font-medium text-yellow-900 dark:text-yellow-300">
+                  ⏳ Loading businesses...
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Business Error State */}
+          {!businessState.loading && !businessState.selectedBusiness && businessState.businesses.length === 0 && (
+            <div className="mb-6 bg-red-50 dark:bg-red-900/20 rounded-xl p-4 border border-red-200 dark:border-red-800">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 dark:bg-red-800/30 rounded-lg">
+                  <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-red-900 dark:text-red-300">
+                    ❌ No businesses found
+                  </div>
+                  <div className="text-xs text-red-700 dark:text-red-400 mt-1">
+                    Please ensure your Facebook account has business management permissions.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Stats */}
           {trackingStats && (

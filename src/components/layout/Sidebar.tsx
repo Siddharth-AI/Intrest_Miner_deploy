@@ -14,6 +14,7 @@ import {
   X,
   TrendingUp,
   Zap,
+  Building2, // NEW: For business switch
 } from "lucide-react";
 import { clearAllData } from "../../../store/features/facebookAdsSlice";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -26,6 +27,7 @@ import { logout } from "../../../store/features/loginSlice";
 import Portal from "../ui/Portal";
 import { fetchProfileData } from "../../../store/features/profileSlice";
 import { performLogout } from "@/utils/logout";
+import BusinessSelectionModal from "../modals/BusinessSelectionModal"; // NEW
 
 interface SidebarProps {
   isOpen: boolean;
@@ -44,8 +46,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
     updateSuccess,
   } = useAppSelector((state) => state.profile);
 
+  // NEW: Get business state
+  const { businessState, facebookAuth } = useAppSelector((state) => state.facebookAds);
+  const hasFacebookConnection = facebookAuth.isConnected && facebookAuth.status?.facebook_token_valid;
+
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showBusinessModal, setShowBusinessModal] = useState(false); // NEW
   const [isMobile, setIsMobile] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -206,6 +213,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
     { to: "/profile-update", icon: Settings, label: "Account Settings" },
     { to: "/search-history", icon: History, label: "Search History" },
     { to: "/billing-history", icon: FaMoneyBillWave, label: "Billing History" },
+    // NEW: Business Switch Button (only show if Facebook connected and has businesses)
+    ...(hasFacebookConnection && businessState.businesses.length > 0 ? [{
+      action: "switchBusiness",
+      icon: Building2,
+      label: `Switch Business${businessState.selectedBusiness ? ` (${businessState.selectedBusiness.business_name})` : ''}`
+    }] : [])
   ];
 
   const handleNavClick = () => {
@@ -437,18 +450,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
                     exit={{ opacity: 0, y: 10 }}
                     className="fixed left-20 bottom-8 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 py-1 z-[60]" // left-20 matches collapsed width, w-64 gives enough space
                     style={{ pointerEvents: "all" }}>
-                    {userMenuItems.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          handleNavClick();
-                        }}
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <item.icon className="w-4 h-4 mr-3" />
-                        {item.label}
-                      </Link>
+                    {userMenuItems.map((item, index) => (
+                      item.action === "switchBusiness" ? (
+                        <button
+                          key={`action-${index}`}
+                          onClick={() => {
+                            setShowBusinessModal(true);
+                            setShowUserMenu(false);
+                          }}
+                          className="w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                          <item.icon className="w-4 h-4 mr-3" />
+                          {item.label}
+                        </button>
+                      ) : (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            handleNavClick();
+                          }}
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                          <item.icon className="w-4 h-4 mr-3" />
+                          {item.label}
+                        </Link>
+                      )
                     ))}
                     <button
                       onClick={handleLogout}
@@ -465,18 +491,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   className="absolute left-4 right-4 bottom-[5.3rem] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 py-1 z-10">
-                  {userMenuItems.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        handleNavClick();
-                      }}
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                      <item.icon className="w-4 h-4 mr-3" />
-                      {item.label}
-                    </Link>
+                  {userMenuItems.map((item, index) => (
+                    item.action === "switchBusiness" ? (
+                      <button
+                        key={`action-${index}`}
+                        onClick={() => {
+                          setShowBusinessModal(true);
+                          setShowUserMenu(false);
+                        }}
+                        className="w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <item.icon className="w-4 h-4 mr-3" />
+                        {item.label}
+                      </button>
+                    ) : (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          handleNavClick();
+                        }}
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <item.icon className="w-4 h-4 mr-3" />
+                        {item.label}
+                      </Link>
+                    )
                   ))}
                   <button
                     onClick={handleLogout}
@@ -489,6 +528,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, isCollapsed }) => {
           </div>
         )}
       </motion.aside>
+
+      {/* NEW: Business Selection Modal */}
+      <BusinessSelectionModal
+        isOpen={showBusinessModal}
+        onClose={() => setShowBusinessModal(false)}
+      />
     </>
   );
 };
