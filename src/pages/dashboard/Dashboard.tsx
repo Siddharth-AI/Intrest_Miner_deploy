@@ -74,8 +74,8 @@ const TokenStatus: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             ? "bg-amber-900/20 border-amber-700/50 text-amber-300"
             : "bg-amber-50 border-amber-200 text-amber-800"
           : isDarkMode
-          ? "bg-green-900/20 border-green-700/50 text-green-300"
-          : "bg-green-50 border-green-200 text-green-800"
+            ? "bg-green-900/20 border-green-700/50 text-green-300"
+            : "bg-green-50 border-green-200 text-green-800"
       }`}>
       <div className="flex items-center gap-2 text-sm">
         <div
@@ -519,7 +519,7 @@ const Dashboard: React.FC = () => {
     businessState, // NEW: Business state
   } = useAppSelector((state) => state.facebookAds);
   const { hasSeenOnboarding, loading: onboardingLoading } = useAppSelector(
-    (state) => state.onboarding
+    (state) => state.onboarding,
   );
 
   // Local state
@@ -572,7 +572,7 @@ const Dashboard: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = React.useState(() =>
     typeof window !== "undefined"
       ? document.documentElement.classList.contains("dark")
-      : false
+      : false,
   );
 
   useEffect(() => {
@@ -633,11 +633,21 @@ const Dashboard: React.FC = () => {
 
   // NEW: Show business modal if no business selected
   useEffect(() => {
-    if (businessState.businesses.length > 0 && !businessState.selectedBusiness && !businessState.loading) {
-      console.log("🔄 No business selected, business modal will be handled by sidebar");
+    if (
+      businessState.businesses.length > 0 &&
+      !businessState.selectedBusiness &&
+      !businessState.loading
+    ) {
+      console.log(
+        "🔄 No business selected, business modal will be handled by sidebar",
+      );
       // Business modal will be handled by sidebar now
     }
-  }, [businessState.businesses, businessState.selectedBusiness, businessState.loading]);
+  }, [
+    businessState.businesses,
+    businessState.selectedBusiness,
+    businessState.loading,
+  ]);
 
   // NEW: Handle business errors
   useEffect(() => {
@@ -652,12 +662,25 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const authToken = localStorage.getItem("token");
-    if (authToken && hasFacebookConnection && businessState.selectedBusiness && adAccounts.length === 0) {
+    if (
+      authToken &&
+      hasFacebookConnection &&
+      businessState.selectedBusiness &&
+      adAccounts.length === 0
+    ) {
       console.log("🔄 Dashboard: Fetching ad accounts...");
-      console.log("📊 Selected Business:", businessState.selectedBusiness.business_name);
+      console.log(
+        "📊 Selected Business:",
+        businessState.selectedBusiness.business_name,
+      );
       dispatch(fetchAdAccounts());
     }
-  }, [dispatch, hasFacebookConnection, businessState.selectedBusiness, adAccounts.length]);
+  }, [
+    dispatch,
+    hasFacebookConnection,
+    businessState.selectedBusiness,
+    adAccounts.length,
+  ]);
 
   useEffect(() => {
     if (adAccounts.length > 0 && !selectedAccount) {
@@ -710,7 +733,7 @@ const Dashboard: React.FC = () => {
         description: "Fetching campaigns and insights...",
       });
     },
-    [dispatch, hasFacebookConnection, toast]
+    [dispatch, hasFacebookConnection, toast],
   );
 
   const handleCampaignChange = useCallback(
@@ -721,7 +744,7 @@ const Dashboard: React.FC = () => {
         dispatch(fetchCampaignInsights(campaignId));
       }
     },
-    [dispatch, hasFacebookConnection]
+    [dispatch, hasFacebookConnection],
   );
 
   const handleRefresh = useCallback(async () => {
@@ -731,7 +754,7 @@ const Dashboard: React.FC = () => {
       if (selectedAccount) {
         await dispatch(fetchCampaigns(selectedAccount)).unwrap();
         await dispatch(
-          fetchInsights({ forceRefresh: false, enableAI: false })
+          fetchInsights({ forceRefresh: false, enableAI: false }),
         ).unwrap();
 
         toast({
@@ -760,7 +783,7 @@ const Dashboard: React.FC = () => {
       activeCampaigns: campaigns.filter((c) => c.status === "ACTIVE").length,
       dataInsights: campaignInsightstotal.length,
     }),
-    [adAccounts.length, campaigns, campaignInsightstotal.length]
+    [adAccounts.length, campaigns, campaignInsightstotal.length],
   );
 
   const themeConfig = useMemo(
@@ -777,7 +800,7 @@ const Dashboard: React.FC = () => {
         ? "shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
         : "shadow-[0_8px_32px_rgba(59,130,246,0.08)]",
     }),
-    [isDarkMode]
+    [isDarkMode],
   );
 
   const statCards = useMemo(
@@ -795,8 +818,8 @@ const Dashboard: React.FC = () => {
             ? "text-emerald-400"
             : "text-amber-400"
           : dashboardStats.connectedAccounts > 0
-          ? "text-emerald-600"
-          : "text-amber-600",
+            ? "text-emerald-600"
+            : "text-amber-600",
       },
       {
         icon: ChartBarIcon,
@@ -805,8 +828,8 @@ const Dashboard: React.FC = () => {
         description: loading
           ? "Loading campaigns..."
           : dashboardStats.totalCampaigns > 0
-          ? "Campaigns discovered"
-          : "No campaigns found",
+            ? "Campaigns discovered"
+            : "No campaigns found",
         valueColor: isDarkMode ? "text-blue-400" : "text-blue-600",
       },
       {
@@ -829,12 +852,12 @@ const Dashboard: React.FC = () => {
           dashboardStats.dataInsights > 0
             ? "Data points ready"
             : loading
-            ? "Loading insights..."
-            : "Select campaign for insights",
+              ? "Loading insights..."
+              : "Select campaign for insights",
         valueColor: isDarkMode ? "text-cyan-400" : "text-cyan-600",
       },
     ],
-    [dashboardStats, isDarkMode, loading]
+    [dashboardStats, isDarkMode, loading],
   );
 
   const quickActions = useMemo(
@@ -866,7 +889,7 @@ const Dashboard: React.FC = () => {
         iconColor: isDarkMode ? "text-emerald-400" : "text-emerald-600",
       },
     ],
-    [aggregatedStats, isDarkMode]
+    [aggregatedStats, isDarkMode],
   );
 
   const recentActivity = useMemo(
@@ -902,7 +925,7 @@ const Dashboard: React.FC = () => {
         status: "active",
       },
     ],
-    [dashboardStats, lastUpdated, selectedAccount]
+    [dashboardStats, lastUpdated, selectedAccount],
   );
 
   return (
@@ -1018,23 +1041,37 @@ const Dashboard: React.FC = () => {
                     }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${
-                          isDarkMode ? "bg-blue-800/30" : "bg-blue-100"
-                        }`}>
-                          <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        <div
+                          className={`p-2 rounded-lg ${
+                            isDarkMode ? "bg-blue-800/30" : "bg-blue-100"
+                          }`}>
+                          <svg
+                            className="w-5 h-5 text-blue-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
                           </svg>
                         </div>
                         <div>
-                          <div className={`text-sm font-medium ${
-                            isDarkMode ? "text-blue-300" : "text-blue-900"
-                          }`}>
-                            🏢 Your Business: {businessState.selectedBusiness.business_name}
+                          <div
+                            className={`text-sm font-medium ${
+                              isDarkMode ? "text-blue-300" : "text-blue-900"
+                            }`}>
+                            🏢 Your Business:{" "}
+                            {businessState.selectedBusiness.business_name}
                           </div>
-                          <div className={`text-xs ${
-                            isDarkMode ? "text-blue-400" : "text-blue-700"
-                          } mt-1`}>
-                            Business ID: {businessState.selectedBusiness.business_id}
+                          <div
+                            className={`text-xs ${
+                              isDarkMode ? "text-blue-400" : "text-blue-700"
+                            } mt-1`}>
+                            Business ID:{" "}
+                            {businessState.selectedBusiness.business_id}
                           </div>
                         </div>
                       </div>
@@ -1054,9 +1091,10 @@ const Dashboard: React.FC = () => {
                     }`}>
                     <div className="flex items-center gap-3">
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></div>
-                      <div className={`text-sm font-medium ${
-                        isDarkMode ? "text-yellow-300" : "text-yellow-900"
-                      }`}>
+                      <div
+                        className={`text-sm font-medium ${
+                          isDarkMode ? "text-yellow-300" : "text-yellow-900"
+                        }`}>
                         ⏳ Loading businesses...
                       </div>
                     </div>
@@ -1064,84 +1102,148 @@ const Dashboard: React.FC = () => {
                 )}
 
                 {/* Business Error State */}
-                {!businessState.loading && !businessState.selectedBusiness && businessState.businesses.length === 0 && hasFacebookConnection && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`relative rounded-2xl p-4 mb-6 ${
-                      isDarkMode
-                        ? "bg-red-900/20 border border-red-700/50"
-                        : "bg-red-50 border border-red-200"
-                    }`}>
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${
-                        isDarkMode ? "bg-red-800/30" : "bg-red-100"
+                {!businessState.loading &&
+                  !businessState.selectedBusiness &&
+                  businessState.businesses.length === 0 &&
+                  hasFacebookConnection && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`relative rounded-2xl p-4 mb-6 ${
+                        isDarkMode
+                          ? "bg-amber-900/20 border border-amber-700/50"
+                          : "bg-amber-50 border border-amber-200"
                       }`}>
-                        <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <div className={`text-sm font-medium ${
-                          isDarkMode ? "text-red-300" : "text-red-900"
-                        }`}>
-                          ❌ No businesses found
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`p-2 rounded-lg ${
+                            isDarkMode ? "bg-amber-800/30" : "bg-amber-100"
+                          }`}>
+                          <svg
+                            className="w-4 h-4 text-amber-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z"
+                            />
+                          </svg>
                         </div>
-                        <div className={`text-xs ${
-                          isDarkMode ? "text-red-400" : "text-red-700"
-                        } mt-1`}>
-                          Please ensure your Facebook account has business management permissions.
+                        <div>
+                          <div
+                            className={`text-sm font-medium ${
+                              isDarkMode ? "text-amber-300" : "text-amber-900"
+                            }`}>
+                            📋 Please select your business for better experience
+                          </div>
+                          <div
+                            className={`text-xs ${
+                              isDarkMode ? "text-amber-400" : "text-amber-700"
+                            } mt-1`}>
+                            Choose a business to access your ad accounts and
+                            campaigns.
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                )}
+                    </motion.div>
+                  )}
+
+                {/* Business Not Found State */}
+                {!businessState.loading &&
+                  !businessState.selectedBusiness &&
+                  businessState.businesses.length > 0 &&
+                  hasFacebookConnection && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`relative rounded-2xl p-4 mb-6 ${
+                        isDarkMode
+                          ? "bg-amber-900/20 border border-amber-700/50"
+                          : "bg-amber-50 border border-amber-200"
+                      }`}>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`p-2 rounded-lg ${
+                            isDarkMode ? "bg-amber-800/30" : "bg-amber-100"
+                          }`}>
+                          <svg
+                            className="w-4 h-4 text-amber-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <div
+                            className={`text-sm font-medium ${
+                              isDarkMode ? "text-amber-300" : "text-amber-900"
+                            }`}>
+                            📋 Please select your business for better experience
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
 
                 {/* Selectors */}
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className={`relative rounded-2xl p-6 mb-8 ${
-                    isDarkMode
-                      ? "bg-slate-800/50 border-b-blue-500 border border-slate-700/50"
-                      : "bg-white border border-b-blue-500/30 border-gray-200/50"
-                  }`}>
-                  {/* Content */}
-                  <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Ad Account Selector */}
-                    {adAccounts.length > 0 && (
-                      <CustomDropdown
-                        label="Ad Account"
-                        options={adAccounts.map((acc) => ({
-                          id: acc.id,
-                          name: acc.name,
-                        }))}
-                        value={selectedAccount}
-                        onChange={handleAccountChange}
-                        placeholder="Choose an ad account"
-                        isDarkMode={isDarkMode}
-                        colorScheme="blue"
-                      />
-                    )}
+                {businessState.selectedBusiness &&
+                  businessState.businesses.length > 0 &&
+                  hasFacebookConnection &&
+                  adAccounts.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className={`relative rounded-2xl p-6 mb-8 ${
+                        isDarkMode
+                          ? "bg-slate-800/50 border-b-blue-500 border border-slate-700/50"
+                          : "bg-white border border-b-blue-500/30 border-gray-200/50"
+                      }`}>
+                      {/* Content */}
+                      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Ad Account Selector */}
+                        {adAccounts.length > 0 && (
+                          <CustomDropdown
+                            label="Ad Account"
+                            options={adAccounts.map((acc) => ({
+                              id: acc.id,
+                              name: acc.name,
+                            }))}
+                            value={selectedAccount}
+                            onChange={handleAccountChange}
+                            placeholder="Choose an ad account"
+                            isDarkMode={isDarkMode}
+                            colorScheme="blue"
+                          />
+                        )}
 
-                    {/* Campaign Selector */}
-                    {campaigns.length > 0 && (
-                      <CustomDropdown
-                        label="Campaign"
-                        options={campaigns.map((c) => ({
-                          id: c.id,
-                          name: c.name,
-                        }))}
-                        value={selectedCampaign}
-                        onChange={handleCampaignChange}
-                        placeholder="Choose a campaign"
-                        isDarkMode={isDarkMode}
-                        colorScheme="purple"
-                      />
-                    )}
-                  </div>
-                </motion.div>
+                        {/* Campaign Selector */}
+                        {campaigns.length > 0 && (
+                          <CustomDropdown
+                            label="Campaign"
+                            options={campaigns.map((c) => ({
+                              id: c.id,
+                              name: c.name,
+                            }))}
+                            value={selectedCampaign}
+                            onChange={handleCampaignChange}
+                            placeholder="Choose a campaign"
+                            isDarkMode={isDarkMode}
+                            colorScheme="purple"
+                          />
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
               </>
             )}
 
@@ -1210,12 +1312,12 @@ const Dashboard: React.FC = () => {
                               ? "bg-emerald-500/20"
                               : "bg-emerald-100"
                             : activity.status === "pending"
-                            ? isDarkMode
-                              ? "bg-amber-500/20"
-                              : "bg-amber-100"
-                            : isDarkMode
-                            ? "bg-blue-500/20"
-                            : "bg-blue-100"
+                              ? isDarkMode
+                                ? "bg-amber-500/20"
+                                : "bg-amber-100"
+                              : isDarkMode
+                                ? "bg-blue-500/20"
+                                : "bg-blue-100"
                         }`}>
                         {activity.icon}
                       </div>

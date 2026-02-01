@@ -587,9 +587,9 @@ export const selectBusiness = createAsyncThunk(
       console.log(`🔄 Selecting business: ${businessId}`);
       const res = await fetch(`${import.meta.env.VITE_INTEREST_MINER_API_URL}/api/meta/select-business`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ business_id: businessId }),
       });
@@ -1169,6 +1169,25 @@ const facebookAdsSlice = createSlice({
       })
       .addCase(unlinkFacebookAccount.fulfilled, (state) => {
         state.facebookAuth.isLoading = false;
+
+        // NEW: Clear business data completely when Facebook is unlinked
+        state.businessState = {
+          businesses: [],
+          selectedBusiness: null,
+          loading: false,
+          error: null,
+        };
+
+        // Also clear ad accounts and related data
+        state.adAccounts = [];
+        state.selectedAccount = "";
+        state.campaigns = [];
+        state.insights = [];
+        state.campaignInsights = [];
+        state.campaignInsightstotal = [];
+        state.aggregatedStats = null;
+
+        console.log("✅ Business state and ad data cleared after Facebook unlink");
         // Status will be refreshed by checkFacebookStatus
       })
       .addCase(unlinkFacebookAccount.rejected, (state, action) => {
@@ -1203,7 +1222,7 @@ const facebookAdsSlice = createSlice({
         state.businessState.loading = false;
         state.businessState.error = action.payload as string;
       })
-      
+
       .addCase(selectBusiness.pending, (state) => {
         state.businessState.loading = true;
         state.businessState.error = null;
@@ -1211,7 +1230,7 @@ const facebookAdsSlice = createSlice({
       .addCase(selectBusiness.fulfilled, (state, action) => {
         state.businessState.loading = false;
         state.businessState.selectedBusiness = action.payload.selectedBusiness;
-        
+
         // Update businesses list with new selection state
         if (action.payload.businesses) {
           state.businessState.businesses = action.payload.businesses;
@@ -1222,7 +1241,7 @@ const facebookAdsSlice = createSlice({
             is_selected: business.business_id === action.payload.selectedBusiness?.business_id
           }));
         }
-        
+
         // Clear ad accounts when business changes
         state.adAccounts = [];
         state.selectedAccount = "";
