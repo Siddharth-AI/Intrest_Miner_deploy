@@ -95,6 +95,15 @@ const MetaCampaign: React.FC = () => {
         description: "Your Facebook account has been disconnected successfully",
       });
 
+      // Clear ad account selection flag (force modal on next connect)
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('ad_accounts_selected_')) {
+          localStorage.removeItem(key);
+          console.log(`🧹 Cleared: ${key}`);
+        }
+      });
+
       // Clear data and refresh
       dispatch(clearAllData());
       router("/dashboard");

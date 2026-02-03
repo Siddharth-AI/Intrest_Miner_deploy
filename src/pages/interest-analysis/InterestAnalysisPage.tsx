@@ -337,7 +337,7 @@ export const InterestAnalysisPage: React.FC = () => {
                 className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all">
                 {adAccounts.map((account: any) => (
                   <option key={account.id} value={account.id}>
-                    {account.name}
+                    {account.name}{account.source ? ` (${account.source === 'BUSINESS' ? 'Business' : 'Personal'})` : ''}
                   </option>
                 ))}
               </select>

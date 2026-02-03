@@ -25,14 +25,22 @@ import razorpayReducer from './features/razorpaySlice';
 import facebookAdsReducer from './features/facebookAdsSlice';
 import onboardingReducer from './features/onboardingSlice';
 import interestAnalysisReducer from './features/interestAnalysisSlice';
+import metaSettingsReducer from './features/metaSettingsSlice';
+import analyticsReducer from './features/analyticsSlice';
+import conversionReducer from './features/conversionSlice';
 
 
 // 🔥 NEW: Separate persist config for facebookAds with selective fields
 const facebookAdsPersistConfig = {
   key: 'facebookAds',
   storage,
-  // 🔥 CRITICAL: Only persist cache data, not UI state
-  whitelist: ['insightsCache', 'insightsLastUpdated'],
+  // 🔥 CRITICAL: Persist cache data + selected account/campaign for better UX
+  whitelist: [
+    'insightsCache', 
+    'insightsLastUpdated',
+    'selectedAccount',  // ✅ Persist selected account
+    'selectedCampaign'  // ✅ Persist selected campaign
+  ],
   blacklist: [
     'loading',
     'loadingTotals',
@@ -75,6 +83,9 @@ const rootReducer = combineReducers({
   facebookAds: persistedFacebookAdsReducer, // 🔥 Use persisted version
   onboarding: onboardingReducer,
   interestAnalysis: interestAnalysisReducer,
+  metaSettings: metaSettingsReducer, // 🔥 NEW: Meta Settings
+  analytics: analyticsReducer, // 🔥 NEW: Analytics
+  conversion: conversionReducer, // 🔥 NEW: Conversion Tracking
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

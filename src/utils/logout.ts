@@ -42,6 +42,16 @@ export const performLogout = async (
       localStorage.removeItem('token');
       localStorage.removeItem('access_token');
 
+      // 🔥 Clear ad account selection flag for current user
+      // This ensures modal shows again on next login
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('ad_accounts_selected_')) {
+          localStorage.removeItem(key);
+          console.log(`🧹 Cleared: ${key}`);
+        }
+      });
+
       // 🔥 KEEP persist:facebookAds (AI cache)
       // 🔥 KEEP persist:root (if it contains other important data)
 
@@ -53,6 +63,14 @@ export const performLogout = async (
       // Minimal clear
       localStorage.removeItem('token');
       localStorage.removeItem('access_token');
+      
+      // Still clear ad account selection flag
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('ad_accounts_selected_')) {
+          localStorage.removeItem(key);
+        }
+      });
     }
 
     // 7. Close modal if needed

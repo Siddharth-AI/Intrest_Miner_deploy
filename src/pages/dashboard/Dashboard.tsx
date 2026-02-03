@@ -25,9 +25,8 @@ import {
   setSelectedCampaign,
   fetchCampaignInsights,
   checkFacebookStatus,
-  fetchUserBusinesses, // NEW
-  selectBusiness, // NEW
-  clearBusinessError, // NEW
+  fetchAllAdAccounts, // NEW: For visibility modal
+  updateAdAccountVisibility, // NEW: For visibility modal
 } from "../../../store/features/facebookAdsSlice";
 import {
   fetchOnboardingStatus,
@@ -45,6 +44,7 @@ import OnboardingModal from "../../components/modals/OnboardingModal";
 import FloatingHelpButton from "@/components/common/FloatingHelpButton";
 import DashboardHelpModal from "@/components/modals/DashboardHelpModal";
 import HelpTooltip from "@/components/common/HelpTooltip";
+import AdAccountSelectionModal from "../../components/modals/AdAccountSelectionModal"; // NEW: Ad account visibility modal
 
 // NEW - Use Facebook auth state instead of profile data
 const TokenStatus: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
@@ -374,11 +374,11 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   return (
     <div className="space-y-3" ref={dropdownRef}>
       <div className="flex items-center gap-2 mb-2">
-        <div
+        {/* <div
           className={`w-1.5 h-1.5 rounded-full ${
             value ? "bg-green-500 animate-pulse" : "bg-gray-400"
           }`}
-        />
+        /> */}
         <label
           className={`text-sm font-semibold tracking-wide ${
             isDarkMode ? "text-gray-200" : "text-gray-700"
@@ -516,7 +516,6 @@ const Dashboard: React.FC = () => {
     loading,
     lastUpdated,
     facebookAuth,
-    businessState, // NEW: Business state
   } = useAppSelector((state) => state.facebookAds);
   const { hasSeenOnboarding, loading: onboardingLoading } = useAppSelector(
     (state) => state.onboarding,
@@ -526,6 +525,21 @@ const Dashboard: React.FC = () => {
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [hasFetchedOnboarding, setHasFetchedOnboarding] = useState(false);
+  
+  // NEW: Ad account visibility modal state
+  const [showAdAccountModal, setShowAdAccountModal] = useState(false);
+  const [allAdAccounts, setAllAdAccounts] = useState<any[]>([]);
+  const [loadingAllAccounts, setLoadingAllAccounts] = useState(false);
+  const modalJustClosedRef = React.useRef(false);
+  
+  // Check if user has already selected accounts (from localStorage)
+  const hasUserSelectedAccounts = () => {
+    const userUuid = profileData?.uuid;
+    if (!userUuid) return false;
+    
+    const key = `ad_accounts_selected_${userUuid}`;
+    return localStorage.getItem(key) === 'true';
+  };
 
   // Fetch onboarding status when component mounts
   useEffect(() => {
@@ -590,13 +604,6 @@ const Dashboard: React.FC = () => {
   console.log(isConnected, "isconnected=>>>>>>>>>>>>");
   const hasFacebookConnection = isConnected;
 
-  // NEW: Fetch businesses when Facebook connection is established
-  useEffect(() => {
-    if (hasFacebookConnection) {
-      dispatch(fetchUserBusinesses());
-    }
-  }, [dispatch, hasFacebookConnection]);
-
   // Show tooltip on mount
   useEffect(() => {
     setShowHelpTooltip(true);
@@ -631,66 +638,81 @@ const Dashboard: React.FC = () => {
 
   const router = useNavigate();
 
-  // NEW: Show business modal if no business selected
-  useEffect(() => {
-    if (
-      businessState.businesses.length > 0 &&
-      !businessState.selectedBusiness &&
-      !businessState.loading
-    ) {
-      console.log(
-        "🔄 No business selected, business modal will be handled by sidebar",
-      );
-      // Business modal will be handled by sidebar now
-    }
-  }, [
-    businessState.businesses,
-    businessState.selectedBusiness,
-    businessState.loading,
-  ]);
-
-  // NEW: Handle business errors
-  useEffect(() => {
-    if (businessState.error) {
-      toast({
-        title: "Business Error",
-        description: businessState.error,
-        variant: "destructive",
-      });
-    }
-  }, [businessState.error, toast]);
-
   useEffect(() => {
     const authToken = localStorage.getItem("token");
     if (
       authToken &&
       hasFacebookConnection &&
-      businessState.selectedBusiness &&
       adAccounts.length === 0
     ) {
       console.log("🔄 Dashboard: Fetching ad accounts...");
-      console.log(
-        "📊 Selected Business:",
-        businessState.selectedBusiness.business_name,
-      );
       dispatch(fetchAdAccounts());
     }
   }, [
     dispatch,
     hasFacebookConnection,
-    businessState.selectedBusiness,
     adAccounts.length,
   ]);
 
+  // NEW: Auto-open modal when accounts are fetched for first time
   useEffect(() => {
-    if (adAccounts.length > 0 && !selectedAccount) {
-      dispatch(setSelectedAccount(adAccounts[0].id));
-      toast({
-        title: "Account Auto-Selected",
-        description: `Automatically selected: ${adAccounts[0].name}`,
-      });
-    }
-  }, [adAccounts, selectedAccount, dispatch, toast]);
+    const checkAndOpenModal = async () => {
+      // Check if modal was just closed (to prevent re-opening after save)
+      if (modalJustClosedRef.current) {
+        console.log("⏭️ Modal was just closed, skipping auto-open");
+        return;
+      }
+      
+      // Check if user has already selected accounts
+      if (hasUserSelectedAccounts()) {
+        console.log("✅ User has already selected accounts, skipping modal");
+        return;
+      }
+
+      // Only run when we have Facebook connection
+      if (!hasFacebookConnection) {
+        return;
+      }
+
+      // Wait for ad accounts to be fetched
+      if (adAccounts.length === 0 && !loading) {
+        return;
+      }
+
+      // If we have accounts, check if any are active
+      if (adAccounts.length > 0) {
+        // Fetch all accounts to check if user needs to select
+        try {
+          const result = await dispatch(fetchAllAdAccounts()).unwrap();
+          const allAccounts = Array.isArray(result) ? result : [];
+          
+          // Count active accounts
+          const activeCount = allAccounts.filter((acc: any) => acc.is_active).length;
+          
+          console.log(`📊 Active accounts: ${activeCount} / ${allAccounts.length}`);
+          
+          // If only 1 or 0 active accounts, show modal for user to select
+          if (activeCount <= 1 && allAccounts.length > 1) {
+            console.log("🔔 Opening ad account selection modal automatically");
+            setAllAdAccounts(allAccounts);
+            setShowAdAccountModal(true);
+          } else if (activeCount > 1) {
+            // User has multiple active accounts, mark as selected
+            const userUuid = profileData?.uuid;
+            if (userUuid) {
+              localStorage.setItem(`ad_accounts_selected_${userUuid}`, 'true');
+            }
+          }
+        } catch (error) {
+          console.error("❌ Failed to check accounts:", error);
+        }
+      }
+    };
+
+    checkAndOpenModal();
+  }, [adAccounts.length, hasFacebookConnection, loading, dispatch, profileData?.uuid]);
+
+  // NOTE: Removed auto-select logic - let user select via modal first
 
   useEffect(() => {
     if (selectedAccount) {
@@ -774,6 +796,77 @@ const Dashboard: React.FC = () => {
       setTimeout(() => setIsRefreshing(false), 1000);
     }
   }, [selectedAccount, adAccounts.length, dispatch, toast]);
+
+  // NEW: Handle opening ad account visibility modal
+  const handleManageAdAccounts = useCallback(async () => {
+    setLoadingAllAccounts(true);
+    setShowAdAccountModal(true);
+    
+    try {
+      const result = await dispatch(fetchAllAdAccounts()).unwrap();
+      console.log("📊 Fetched all accounts:", result);
+      // Result is directly an array, not wrapped in { adAccounts: [] }
+      setAllAdAccounts(Array.isArray(result) ? result : []);
+    } catch (error: any) {
+      console.error("❌ Failed to fetch all accounts:", error);
+      toast({
+        title: "Failed to Load Accounts",
+        description: error || "Could not fetch ad accounts",
+        variant: "destructive",
+      });
+      setShowAdAccountModal(false);
+    } finally {
+      setLoadingAllAccounts(false);
+    }
+  }, [dispatch, toast]);
+
+  // NEW: Handle saving ad account visibility
+  const handleSaveAdAccountVisibility = useCallback(async (selectedIds: string[]) => {
+    try {
+      // Mark that user has selected accounts FIRST (before any state changes)
+      const userUuid = profileData?.uuid;
+      if (userUuid) {
+        localStorage.setItem(`ad_accounts_selected_${userUuid}`, 'true');
+        console.log("✅ Marked accounts as selected in localStorage");
+      }
+      
+      // Set ref to prevent modal from re-opening
+      modalJustClosedRef.current = true;
+      
+      await dispatch(updateAdAccountVisibility(selectedIds)).unwrap();
+      
+      toast({
+        title: "Visibility Updated",
+        description: `${selectedIds.length} account(s) will be visible`,
+      });
+      
+      setShowAdAccountModal(false);
+      
+      // Refresh ad accounts to show updated list
+      const refreshedAccounts = await dispatch(fetchAdAccounts()).unwrap();
+      
+      // Auto-select first account if none selected
+      if (refreshedAccounts && refreshedAccounts.length > 0 && !selectedAccount) {
+        dispatch(setSelectedAccount(refreshedAccounts[0].id));
+        toast({
+          title: "Account Selected",
+          description: `Selected: ${refreshedAccounts[0].name}`,
+        });
+      }
+      
+      // Reset ref after a delay
+      setTimeout(() => {
+        modalJustClosedRef.current = false;
+      }, 1000);
+    } catch (error: any) {
+      toast({
+        title: "Update Failed",
+        description: error || "Could not update visibility",
+        variant: "destructive",
+      });
+      modalJustClosedRef.current = false;
+    }
+  }, [dispatch, toast, selectedAccount, profileData?.uuid]);
 
   // All your existing data calculations remain the same...
   const dashboardStats = useMemo(
@@ -1028,177 +1121,8 @@ const Dashboard: React.FC = () => {
                   </div>
                 </motion.div>
 
-                {/* NEW: Business Selection Display */}
-                {businessState.selectedBusiness && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className={`relative rounded-2xl p-4 mb-6 ${
-                      isDarkMode
-                        ? "bg-blue-900/20 border border-blue-700/50"
-                        : "bg-blue-50 border border-blue-200"
-                    }`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-lg ${
-                            isDarkMode ? "bg-blue-800/30" : "bg-blue-100"
-                          }`}>
-                          <svg
-                            className="w-5 h-5 text-blue-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <div
-                            className={`text-sm font-medium ${
-                              isDarkMode ? "text-blue-300" : "text-blue-900"
-                            }`}>
-                            🏢 Your Business:{" "}
-                            {businessState.selectedBusiness.business_name}
-                          </div>
-                          <div
-                            className={`text-xs ${
-                              isDarkMode ? "text-blue-400" : "text-blue-700"
-                            } mt-1`}>
-                            Business ID:{" "}
-                            {businessState.selectedBusiness.business_id}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Business Loading State */}
-                {businessState.loading && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`relative rounded-2xl p-4 mb-6 ${
-                      isDarkMode
-                        ? "bg-yellow-900/20 border border-yellow-700/50"
-                        : "bg-yellow-50 border border-yellow-200"
-                    }`}>
-                    <div className="flex items-center gap-3">
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></div>
-                      <div
-                        className={`text-sm font-medium ${
-                          isDarkMode ? "text-yellow-300" : "text-yellow-900"
-                        }`}>
-                        ⏳ Loading businesses...
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Business Error State */}
-                {!businessState.loading &&
-                  !businessState.selectedBusiness &&
-                  businessState.businesses.length === 0 &&
-                  hasFacebookConnection && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`relative rounded-2xl p-4 mb-6 ${
-                        isDarkMode
-                          ? "bg-amber-900/20 border border-amber-700/50"
-                          : "bg-amber-50 border border-amber-200"
-                      }`}>
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-lg ${
-                            isDarkMode ? "bg-amber-800/30" : "bg-amber-100"
-                          }`}>
-                          <svg
-                            className="w-4 h-4 text-amber-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <div
-                            className={`text-sm font-medium ${
-                              isDarkMode ? "text-amber-300" : "text-amber-900"
-                            }`}>
-                            📋 Please select your business for better experience
-                          </div>
-                          <div
-                            className={`text-xs ${
-                              isDarkMode ? "text-amber-400" : "text-amber-700"
-                            } mt-1`}>
-                            Choose a business to access your ad accounts and
-                            campaigns.
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                {/* Business Not Found State */}
-                {!businessState.loading &&
-                  !businessState.selectedBusiness &&
-                  businessState.businesses.length > 0 &&
-                  hasFacebookConnection && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`relative rounded-2xl p-4 mb-6 ${
-                        isDarkMode
-                          ? "bg-amber-900/20 border border-amber-700/50"
-                          : "bg-amber-50 border border-amber-200"
-                      }`}>
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-lg ${
-                            isDarkMode ? "bg-amber-800/30" : "bg-amber-100"
-                          }`}>
-                          <svg
-                            className="w-4 h-4 text-amber-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <div
-                            className={`text-sm font-medium ${
-                              isDarkMode ? "text-amber-300" : "text-amber-900"
-                            }`}>
-                            📋 Please select your business for better experience
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
                 {/* Selectors */}
-                {businessState.selectedBusiness &&
-                  businessState.businesses.length > 0 &&
-                  hasFacebookConnection &&
-                  adAccounts.length > 0 && (
+                {hasFacebookConnection && adAccounts.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1209,21 +1133,50 @@ const Dashboard: React.FC = () => {
                           : "bg-white border border-b-blue-500/30 border-gray-200/50"
                       }`}>
                       {/* Content */}
-                      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Ad Account Selector */}
+                      <div className="relative space-y-6">
+                        {/* Ad Account Section with Manage Button */}
                         {adAccounts.length > 0 && (
-                          <CustomDropdown
-                            label="Ad Account"
-                            options={adAccounts.map((acc) => ({
-                              id: acc.id,
-                              name: acc.name,
-                            }))}
-                            value={selectedAccount}
-                            onChange={handleAccountChange}
-                            placeholder="Choose an ad account"
-                            isDarkMode={isDarkMode}
-                            colorScheme="blue"
-                          />
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    selectedAccount ? "bg-green-500 animate-pulse" : "bg-gray-400"
+                                  }`}
+                                />
+                                <label
+                                  className={`text-sm font-semibold tracking-wide ${
+                                    isDarkMode ? "text-gray-200" : "text-gray-700"
+                                  }`}>
+                                  Ad Account
+                                </label>
+                              </div>
+                              
+                              {/* NEW: Manage Ad Accounts Button */}
+                              <button
+                                onClick={handleManageAdAccounts}
+                                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                                  isDarkMode
+                                    ? "bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 border border-blue-700/50"
+                                    : "bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200"
+                                }`}>
+                                ⚙️ Manage Accounts
+                              </button>
+                            </div>
+                            
+                            <CustomDropdown
+                              label=""
+                              options={adAccounts.map((acc) => ({
+                                id: acc.id,
+                                name: `${acc.name}${acc.source ? ` (${acc.source === 'BUSINESS' ? 'Business' : 'Personal'})` : ''}`,
+                              }))}
+                              value={selectedAccount}
+                              onChange={handleAccountChange}
+                              placeholder="Choose an ad account"
+                              isDarkMode={isDarkMode}
+                              colorScheme="blue"
+                            />
+                          </div>
                         )}
 
                         {/* Campaign Selector */}
@@ -1461,6 +1414,16 @@ const Dashboard: React.FC = () => {
       <DashboardHelpModal
         isOpen={isHelpModalOpen}
         onClose={() => setIsHelpModalOpen(false)}
+      />
+
+      {/* NEW: Ad Account Selection Modal */}
+      <AdAccountSelectionModal
+        isOpen={showAdAccountModal}
+        onClose={() => setShowAdAccountModal(false)}
+        adAccounts={allAdAccounts}
+        selectedAccountIds={allAdAccounts.filter((acc: any) => acc.is_active).map((acc: any) => acc.id)}
+        onSave={handleSaveAdAccountVisibility}
+        loading={loadingAllAccounts}
       />
     </>
   );

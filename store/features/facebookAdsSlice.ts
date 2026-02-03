@@ -8,6 +8,8 @@ export interface AdAccount {
   account_status: number;
   currency: string;
   spend_cap: string;
+  source?: 'BUSINESS' | 'USER';  // NEW: Source label
+  business_id?: string;  // NEW: Business link (optional)
 }
 
 // Add these new interfaces at the top of your facebookAdsSlice.ts
@@ -587,9 +589,9 @@ export const selectBusiness = createAsyncThunk(
       console.log(`🔄 Selecting business: ${businessId}`);
       const res = await fetch(`${import.meta.env.VITE_INTEREST_MINER_API_URL}/api/meta/select-business`, {
         method: "POST",
-        headers: {
+        headers: { 
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}` 
         },
         body: JSON.stringify({ business_id: businessId }),
       });
@@ -640,6 +642,51 @@ export const fetchAdAccounts = createAsyncThunk("facebookAds/fetchAdAccounts", a
     return rejectWithValue(err.message || "Failed to fetch ad accounts");
   }
 });
+
+// NEW: Fetch ALL ad accounts (including hidden) for selection modal
+export const fetchAllAdAccounts = createAsyncThunk("facebookAds/fetchAllAdAccounts", async (_, { rejectWithValue }) => {
+  const token = getAccessToken();
+  if (!token) return rejectWithValue("No access token found");
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_INTEREST_MINER_API_URL}/api/adaccounts/all`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+    const data = await res.json();
+    return data.data;
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to fetch all ad accounts");
+  }
+});
+
+// NEW: Update ad account visibility
+export const updateAdAccountVisibility = createAsyncThunk(
+  "facebookAds/updateAdAccountVisibility",
+  async (visibleAccountIds: string[], { rejectWithValue, dispatch }) => {
+    const token = getAccessToken();
+    if (!token) return rejectWithValue("No access token found");
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_INTEREST_MINER_API_URL}/api/adaccounts/visibility`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ visibleAccountIds })
+      });
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      
+      // Refresh ad accounts after updating visibility
+      await dispatch(fetchAdAccounts());
+      
+      return visibleAccountIds;
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Failed to update visibility");
+    }
+  }
+);
 
 export const fetchCampaigns = createAsyncThunk("facebookAds/fetchCampaigns", async (accountId: string, { rejectWithValue }) => {
   const token = getAccessToken();
@@ -870,7 +917,12 @@ const facebookAdsSlice = createSlice({
       state.insightsCache = preservedInsightsCache;
       state.insightsLastUpdated = preservedInsightsLastUpdated;
 
-      console.log('✅ State cleared (AI cache preserved)');
+      // ❌ DON'T clear ad account selection flag here
+      // This is called on both logout AND Facebook disconnect
+      // Flag should only be cleared on Facebook disconnect (handled separately)
+      // User's account selection should persist across logout/login
+
+      console.log('✅ State cleared (AI cache preserved, ad account selection preserved)');
     },
 
 
@@ -1169,7 +1221,7 @@ const facebookAdsSlice = createSlice({
       })
       .addCase(unlinkFacebookAccount.fulfilled, (state) => {
         state.facebookAuth.isLoading = false;
-
+        
         // NEW: Clear business data completely when Facebook is unlinked
         state.businessState = {
           businesses: [],
@@ -1177,7 +1229,7 @@ const facebookAdsSlice = createSlice({
           loading: false,
           error: null,
         };
-
+        
         // Also clear ad accounts and related data
         state.adAccounts = [];
         state.selectedAccount = "";
@@ -1186,7 +1238,7 @@ const facebookAdsSlice = createSlice({
         state.campaignInsights = [];
         state.campaignInsightstotal = [];
         state.aggregatedStats = null;
-
+        
         console.log("✅ Business state and ad data cleared after Facebook unlink");
         // Status will be refreshed by checkFacebookStatus
       })
@@ -1222,7 +1274,7 @@ const facebookAdsSlice = createSlice({
         state.businessState.loading = false;
         state.businessState.error = action.payload as string;
       })
-
+      
       .addCase(selectBusiness.pending, (state) => {
         state.businessState.loading = true;
         state.businessState.error = null;
@@ -1230,7 +1282,7 @@ const facebookAdsSlice = createSlice({
       .addCase(selectBusiness.fulfilled, (state, action) => {
         state.businessState.loading = false;
         state.businessState.selectedBusiness = action.payload.selectedBusiness;
-
+        
         // Update businesses list with new selection state
         if (action.payload.businesses) {
           state.businessState.businesses = action.payload.businesses;
@@ -1241,7 +1293,7 @@ const facebookAdsSlice = createSlice({
             is_selected: business.business_id === action.payload.selectedBusiness?.business_id
           }));
         }
-
+        
         // Clear ad accounts when business changes
         state.adAccounts = [];
         state.selectedAccount = "";

@@ -11,6 +11,11 @@ import MetaCampaign from "@/pages/meta-campaign/MetaCampaign";
 import AnalyticsPage from "@/pages/analytics-page/AnalyticsPage";
 import AdvanceAnalyticsPage from "@/pages/advance-analytics-page/AdvanceAnalyticsPage";
 import { InterestAnalysisPage } from "@/pages/interest-analysis/InterestAnalysisPage";
+import ConversionDashboard from "@/pages/conversion-dashboard/ConversionDashboard";
+import WhatsAppSessions from "@/pages/whatsapp-sessions/WhatsAppSessions";
+import MetaSettings from "@/pages/meta-settings/MetaSettings";
+import AnalyticsDashboard from "@/pages/analytics-dashboard/AnalyticsDashboard";
+
 const AuthRoutes = () => {
   return (
     <>
@@ -25,6 +30,10 @@ const AuthRoutes = () => {
       <Route path="/analytics" element={<AnalyticsPage />} />
       <Route path="/advance-analytics" element={<AdvanceAnalyticsPage />} />
       <Route path="/interest-analysis" element={<InterestAnalysisPage />} />
+      <Route path="/conversion-dashboard" element={<ConversionDashboard />} />
+      <Route path="/whatsapp-sessions" element={<WhatsAppSessions />} />
+      <Route path="/meta-settings" element={<MetaSettings />} />
+      <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
     </>
   );
 };
