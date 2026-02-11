@@ -120,36 +120,25 @@ const AnalyticsPage: React.FC = () => {
     }
   }, [dispatch, hasFacebookConnection]);
 
-  // NEW: Show business modal if no business selected
-  useEffect(() => {
-    if (businessState.businesses.length > 0 && !businessState.selectedBusiness && !businessState.loading) {
-      console.log("🔄 AnalyticsPage: No business selected, business modal will be handled by sidebar");
-      // Business modal will be handled by sidebar now
-    }
-  }, [businessState.businesses, businessState.selectedBusiness, businessState.loading]);
-
-  // NEW: Handle business errors
-  useEffect(() => {
-    if (businessState.error) {
-      toast({
-        title: "Business Error",
-        description: businessState.error,
-        variant: "destructive",
-      });
-    }
-  }, [businessState.error, toast]);
-
   // 🔥 ENHANCED: Force fetch ad accounts when connected (includes page reload)
   useEffect(() => {
     if (hasFacebookConnection && businessState.selectedBusiness) {
       // Always fetch accounts if we don't have them
       if (adAccounts.length === 0) {
         console.log("🔄 AnalyticsPage: Fetching ad accounts...");
-        console.log("📊 Selected Business:", businessState.selectedBusiness.business_name);
+        console.log(
+          "📊 Selected Business:",
+          businessState.selectedBusiness.business_name,
+        );
         dispatch(fetchAdAccounts());
       }
     }
-  }, [dispatch, hasFacebookConnection, businessState.selectedBusiness, adAccounts.length]);
+  }, [
+    dispatch,
+    hasFacebookConnection,
+    businessState.selectedBusiness,
+    adAccounts.length,
+  ]);
 
   // 🔥 ENHANCED: Auto-select first account with toast notification
   useEffect(() => {
@@ -214,7 +203,7 @@ const AnalyticsPage: React.FC = () => {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       }).format(amount),
-    []
+    [],
   );
 
   const formatDate = useCallback((dateString: string) => {
@@ -245,7 +234,7 @@ const AnalyticsPage: React.FC = () => {
       dispatch(setSelectedCampaignForModal(campaign));
       dispatch(setShowModal(true));
     },
-    [dispatch, hasFacebookConnection]
+    [dispatch, hasFacebookConnection],
   );
 
   const handleAccountChange = useCallback(
@@ -273,7 +262,7 @@ const AnalyticsPage: React.FC = () => {
         }
       }, 300); // 300ms debounce for account changes
     },
-    [dispatch, shouldLoadInsights, hasFacebookConnection]
+    [dispatch, shouldLoadInsights, hasFacebookConnection],
   );
 
   const handleRefresh = useCallback(() => {
@@ -341,21 +330,21 @@ const AnalyticsPage: React.FC = () => {
         setCurrentPage(page);
       }
     },
-    [paginationData.totalPages]
+    [paginationData.totalPages],
   );
 
   const handleFirstPage = useCallback(() => setCurrentPage(1), []);
   const handleLastPage = useCallback(
     () => setCurrentPage(paginationData.totalPages),
-    [paginationData.totalPages]
+    [paginationData.totalPages],
   );
   const handlePrevPage = useCallback(
     () => setCurrentPage(Math.max(1, currentPage - 1)),
-    [currentPage]
+    [currentPage],
   );
   const handleNextPage = useCallback(
     () => setCurrentPage(Math.min(paginationData.totalPages, currentPage + 1)),
-    [paginationData.totalPages, currentPage]
+    [paginationData.totalPages, currentPage],
   );
 
   const getPageNumbers = useCallback(() => {
@@ -830,50 +819,27 @@ const AnalyticsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-purple-100 dark:bg-purple-800/30 rounded-lg">
-                    <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    <svg
+                      className="w-5 h-5 text-purple-600 dark:text-purple-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
                     </svg>
                   </div>
                   <div>
                     <div className="text-sm font-medium text-purple-900 dark:text-purple-300">
-                      🏢 Your Business: {businessState.selectedBusiness.business_name}
+                      🏢 Your Business:{" "}
+                      {businessState.selectedBusiness.business_name}
                     </div>
                     <div className="text-xs text-purple-700 dark:text-purple-400 mt-1">
                       Business ID: {businessState.selectedBusiness.business_id}
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Business Loading State */}
-          {businessState.loading && (
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
-              <div className="flex items-center gap-3">
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></div>
-                <div className="text-sm font-medium text-yellow-900 dark:text-yellow-300">
-                  ⏳ Loading businesses...
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Business Error State */}
-          {!businessState.loading && !businessState.selectedBusiness && businessState.businesses.length === 0 && hasFacebookConnection && (
-            <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 border border-red-200 dark:border-red-800">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 dark:bg-red-800/30 rounded-lg">
-                  <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-red-900 dark:text-red-300">
-                    ❌ No businesses found
-                  </div>
-                  <div className="text-xs text-red-700 dark:text-red-400 mt-1">
-                    Please ensure your Facebook account has business management permissions.
                   </div>
                 </div>
               </div>
@@ -904,7 +870,7 @@ const AnalyticsPage: React.FC = () => {
                     {account.name} (ID: {account.id})
                     {insightsLastUpdated[account.id] &&
                       ` - Updated: ${new Date(
-                        insightsLastUpdated[account.id]
+                        insightsLastUpdated[account.id],
                       ).toLocaleTimeString()}`}
                   </option>
                 ))}
@@ -1100,7 +1066,7 @@ const AnalyticsPage: React.FC = () => {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <span
                                     className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                      campaign.status
+                                      campaign.status,
                                     )}`}>
                                     {campaign.status}
                                   </span>
@@ -1116,11 +1082,11 @@ const AnalyticsPage: React.FC = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                   {campaign.objective?.replace(
                                     "OUTCOME_",
-                                    ""
+                                    "",
                                   ) || "N/A"}
                                 </td>
                               </motion.tr>
-                            )
+                            ),
                           )}
                         </tbody>
                       </table>
